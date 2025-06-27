@@ -1,0 +1,42 @@
+[
+  {
+    "name": "Space Shuttle",
+    "img": "/images/spaceshuttle.png",
+    "description": "The Space Shuttle was a reusable spacecraft used by NASA from 1981 to 2011. It carried astronauts and cargo to space, launched satellites, and helped build the International Space Station. Its most famous orbiters were Discovery, Atlantis, and Endeavour.",
+    "yearsOfService": "1981–2011",
+    "showOnPlanets": ["Earth", "Mars"],
+    "showOnZoomLevels": [1, 2, 3, 4, 5, 6],
+    "path": [
+      { "x": 0, "y": 0 },
+      { "x": 125, "y": 25 },
+      { "x": 250, "y": 50 },
+      { "x": 375, "y": 75 },
+      { "x": 500, "y": 100 },
+      { "x": 150, "y": 0 },
+      { "x": -25, "y": -50 },
+      { "x": -200, "y": -100 },
+      { "x": -100, "y": -50 },
+      { "x": 0, "y": 0 }
+    ]
+  },
+  {
+    "name": "Voyager 2",
+    "img": "/images/voyager2.png",
+    "description": "NASA’s Voyager 2 holds the record for visiting the greatest number of planets in our Solar System. Launched in August 1977, Voyager 2 performed flybys of: Jupiter (July 1979), Saturn (August 1981), Uranus (January 1986), Neptune (August 1989). It’s the only spacecraft to have visited all four of the gas giants, giving us our first—and for Uranus and Neptune, our only—close-up observations of those distant worlds.",
+    "yearsOfService": "1977–present",
+    "showOnPlanets": ["Jupiter", "Saturn", "Uranus", "Neptune"],
+    "showOnZoomLevels": [7, 8, 9, 10],
+    "path": [
+      { "x": 0, "y": 0 },
+      { "x": 125, "y": 25 },
+      { "x": 250, "y": 50 },
+      { "x": 375, "y": 75 },
+      { "x": 500, "y": 100 },
+      { "x": 150, "y": 0 },
+      { "x": -25, "y": -50 },
+      { "x": -200, "y": -100 },
+      { "x": -100, "y": -50 },
+      { "x": 0, "y": 0 }
+    ]
+  }
+]

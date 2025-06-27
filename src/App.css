@@ -36,3 +36,9 @@
     transform: rotate(360deg);
   }
 }
+.w-6 {
+  width: 1.5rem; /* 6 * 0.25rem */
+}
+.w-40 {
+  width: 11rem; /* 40 * 0.25rem */
+}
