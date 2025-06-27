@@ -669,7 +669,7 @@ export default function SolarSystemHome() {
 							}}
 						>
 							<img
-								src="/images/sun.png"
+								src="images/sun.png"
 								alt="Sun"
 								className="w-32 h-32 md:w-40 md:h-40 drop-shadow-2xl animate-pulse absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20"
 								style={{ pointerEvents: 'auto', cursor: 'pointer' }}
@@ -677,7 +677,7 @@ export default function SolarSystemHome() {
 									playClickSound();
 									setSelectedPlanet({
 										name: 'Sun',
-										img: '/images/sun.png',
+										img: 'images/sun.png',
 										type: 'G-type main-sequence star (G2V)',
 										age: '4.6 billion years',
 										lifetime: 'Approx. 10 billion years',
