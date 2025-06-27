@@ -16,10 +16,20 @@ export default function PlanetModal({
 	setShowExplorerInfo,
 	spaceExplorers,
 	speak,
+	planets = [],
+	planetIdx = 0,
+	onPrevPlanet,
+	onNextPlanet,
 }) {
+	// Filter out the Sun for navigation/indexing logic
+	const filteredPlanets = planets.filter(p => p.name !== 'Sun');
+	// Find the correct index of the current planet in the filtered list
+	const filteredIdx = filteredPlanets.findIndex(p => p.name === planet.name);
+
 	const [isReading, setIsReading] = useState(false);
 	const [voices, setVoices] = useState([]);
 	const [tab, setTab] = useState('info'); // 'info' or 'surface'
+	const [showSurfaceLightbox, setShowSurfaceLightbox] = useState(false);
 
 	// Load voices on mount and when voiceschanged fires
 	useEffect(() => {
@@ -89,6 +99,41 @@ export default function PlanetModal({
 		}, 750);
 	};
 
+	// Keyboard navigation for left/right arrows and lightbox close
+	useEffect(() => {
+		const handleKeyDown = (e) => {
+			if (showSurfaceLightbox) {
+				if (e.key === 'Escape') {
+					e.preventDefault();
+					setShowSurfaceLightbox(false);
+					return;
+				}
+				// Don't allow left/right to navigate planets while lightbox is open
+				return;
+			}
+			if (tab !== 'info' && tab !== 'surface') return;
+			if (e.key === 'ArrowLeft' && filteredIdx > 0) {
+				e.preventDefault();
+				onPrevPlanet(filteredIdx - 1, filteredPlanets);
+			}
+			if (e.key === 'ArrowRight' && filteredIdx < filteredPlanets.length - 1) {
+				e.preventDefault();
+				onNextPlanet(filteredIdx + 1, filteredPlanets);
+			}
+		};
+		document.addEventListener('keydown', handleKeyDown, true);
+		return () => document.removeEventListener('keydown', handleKeyDown, true);
+	}, [filteredIdx, filteredPlanets, onPrevPlanet, onNextPlanet, tab, showSurfaceLightbox]);
+
+	function getImageSrc(img) {
+		if (!img) return '';
+		if (img.startsWith('http') || img.startsWith('data:')) return img;
+		// If already relative, just return
+		if (!img.startsWith('/')) return img;
+		// Remove leading slash for GitHub Pages
+		return img.replace(/^\//, '');
+	}
+
 	return (
 		<>
 			<NarratorAstronaut isVisible={isReading}/>
@@ -117,7 +162,11 @@ export default function PlanetModal({
 					onClose();
 				}}
 			>
-				<div
+				<motion.div
+					initial={{ opacity: 0, scale: 0.85 }}
+					animate={{ opacity: 1, scale: 1 }}
+					exit={{ opacity: 0, scale: 0.85 }}
+					transition={{ duration: 0.45, ease: 'easeOut' }}
 					style={{
 						background: '#18181b',
 						borderRadius: '1.5rem',
@@ -221,6 +270,125 @@ export default function PlanetModal({
 							🏜️ Surface
 						</button>
 					</div>
+					{/* Navigation arrows OUTSIDE modal, styled like zoom buttons */}
+					{filteredIdx > 0 && (
+						<div style={{
+							position: 'absolute',
+							top: '50%',
+							left: '-3.7rem',
+							transform: 'translateY(-50%)',
+							zIndex: 10003,
+							display: 'flex',
+							flexDirection: 'column',
+							gap: '1.5rem',
+							pointerEvents: 'auto',
+						}}>
+							<Button
+								className="font-bold rounded-full shadow-lg flex items-center justify-center group"
+								style={{
+									background: 'linear-gradient(90deg, rgb(34, 34, 59) 0%, rgb(74, 78, 105) 100%)',
+									color: 'white',
+									fontSize: '2rem',
+									fontWeight: 600,
+									width: '2.5rem',
+									height: '2.5rem',
+									lineHeight: 1,
+									padding: 0,
+									display: 'flex',
+									alignItems: 'center',
+									justifyContent: 'center',
+									border: 'none',
+									boxShadow: '0 0 12px 2px #3a3aff55',
+									cursor: 'pointer',
+									position: 'relative',
+									overflow: 'visible',
+									opacity: 1,
+									outline: 'none',
+									transition: 'background 0.2s, color 0.2s',
+								}}
+								aria-label="Previous planet"
+								onClick={e => { e.stopPropagation(); onPrevPlanet(filteredIdx - 1, filteredPlanets); }}
+							>
+								<span style={{ display: 'block', width: '100%', textAlign: 'center', zIndex: 2, position: 'relative' }}>{'<'}</span>
+								<span
+									className="zoom-ring"
+									style={{
+										position: 'absolute',
+										top: '50%',
+										left: '50%',
+										transform: 'translate(-50%, -50%)',
+										width: '100%',
+										height: '100%',
+										borderRadius: '50%',
+										border: '3px solid #ffe680',
+										opacity: 0,
+										transition: 'opacity 0.2s',
+										pointerEvents: 'none',
+									}}
+								/>
+								<style>{`.group:hover .zoom-ring { opacity: 1 !important; }`}</style>
+							</Button>
+						</div>
+					)}
+					{filteredIdx < filteredPlanets.length - 1 && (
+						<div style={{
+							position: 'absolute',
+							top: '50%',
+							right: '-3.7rem',
+							transform: 'translateY(-50%)',
+							zIndex: 10003,
+							display: 'flex',
+							flexDirection: 'column',
+							gap: '1.5rem',
+							pointerEvents: 'auto',
+						}}>
+							<Button
+								className="font-bold rounded-full shadow-lg flex items-center justify-center group"
+								style={{
+									background: 'linear-gradient(90deg, rgb(34, 34, 59) 0%, rgb(74, 78, 105) 100%)',
+									color: 'white',
+									fontSize: '2rem',
+									fontWeight: 600,
+									width: '2.5rem',
+									height: '2.5rem',
+									lineHeight: 1,
+									padding: 0,
+									display: 'flex',
+									alignItems: 'center',
+									justifyContent: 'center',
+									border: 'none',
+									boxShadow: '0 0 12px 2px #3a3aff55',
+									cursor: 'pointer',
+									position: 'relative',
+									overflow: 'visible',
+									opacity: 1,
+									outline: 'none',
+									transition: 'background 0.2s, color 0.2s',
+								}}
+								aria-label="Next planet"
+								onClick={e => { e.stopPropagation(); onNextPlanet(filteredIdx + 1, filteredPlanets); }}
+							>
+								<span style={{ display: 'block', width: '100%', textAlign: 'center', zIndex: 2, position: 'relative' }}>{'>'}</span>
+								<span
+									className="zoom-ring"
+									style={{
+										position: 'absolute',
+										top: '50%',
+										left: '50%',
+										transform: 'translate(-50%, -50%)',
+										width: '100%',
+										height: '100%',
+										borderRadius: '50%',
+										border: '3px solid #ffe680',
+										opacity: 0,
+										transition: 'opacity 0.2s',
+										pointerEvents: 'none',
+									}}
+								/>
+								<style>{`.group:hover .zoom-ring { opacity: 1 !important; }`}</style>
+							</Button>
+						</div>
+					)}
 					{/* Left: Name, Content below */}
 					<div style={{ flex: '0 0 320px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start', minHeight: 420 }}>
 						<h2 style={{ color: '#ffe680', fontSize: '2.1rem', fontWeight: 700, marginBottom: '0.8rem', textAlign: 'center' }}>
@@ -231,7 +399,7 @@ export default function PlanetModal({
 							{tab === 'info' ? (
 								<>
 									<img
-										src={planet.img}
+										src={getImageSrc(planet.img)}
 										alt={planet.name}
 										style={{
 											width: '220px',
@@ -239,16 +407,82 @@ export default function PlanetModal({
 											objectFit: 'contain',
 											display: 'block',
 											marginBottom: '0.8rem',
+											cursor: 'zoom-in',
+											borderRadius: '1rem',
+											background: '#23223b',
+											border: '3px solid #ffe680',
+											boxShadow: '0 0 16px 4px #ffe68055',
+											padding: '0.5rem',
 										}}
+										onClick={() => setShowSurfaceLightbox(true)}
+										tabIndex={0}
+										aria-label={`Show large view of ${planet.name}`}
 									/>
 									<p style={{ color: '#fff', fontSize: '1.1rem', marginBottom: '1.5rem', textAlign: 'center' }}>
 										{planet.description}
 									</p>
+									{showSurfaceLightbox && (
+										<div
+											role="dialog"
+											aria-modal="true"
+											onClick={e => { if (e.target === e.currentTarget) setShowSurfaceLightbox(false); }}
+											style={{
+												position: 'fixed',
+												top: 0,
+												left: 0,
+												width: '100vw',
+												height: '100vh',
+												background: 'rgba(0,0,0,0.92)',
+												zIndex: 20000,
+												display: 'flex',
+												alignItems: 'center',
+												justifyContent: 'center',
+												cursor: 'zoom-out',
+											}}
+										>
+											<img
+												src={getImageSrc(planet.img)}
+												alt={planet.name + ' large'}
+												style={{
+													maxWidth: '90vw',
+													maxHeight: '90vh',
+													borderRadius: '2rem',
+													boxShadow: '0 0 32px 8px #ffe680cc',
+													background: '#23223b',
+													border: '5px solid #ffe680',
+												}}
+											/>
+											<button
+												style={{
+													position: 'absolute',
+													top: 24,
+													right: 36,
+													color: '#fff',
+													background: 'rgba(0,0,0,0.5)',
+													border: 'none',
+													borderRadius: '50%',
+													fontSize: '2.5rem',
+													fontWeight: 900,
+													cursor: 'pointer',
+													zIndex: 20001,
+													width: 48,
+													height: 48,
+													display: 'flex',
+													alignItems: 'center',
+													justifyContent: 'center',
+												}}
+												aria-label="Close large planet view"
+												onClick={e => { e.stopPropagation(); setShowSurfaceLightbox(false); }}
+											>
+												&#10005;
+											</button>
+										</div>
+									)}
 								</>
 							) : (
 								<>
 									<img
-										src={planet.surfaceImg}
+										src={getImageSrc(planet.surfaceImg)}
 										alt={planet.name + ' surface'}
 										style={{
 											width: '320px',
@@ -261,11 +495,72 @@ export default function PlanetModal({
 											border: '3px solid #7f00ff',
 											boxShadow: '0 0 16px 4px #7f00ff55',
 											padding: '0.5rem',
+											cursor: 'zoom-in',
 										}}
+										onClick={() => setShowSurfaceLightbox(true)}
+										tabIndex={0}
+										aria-label={`Show large surface view of ${planet.name}`}
 									/>
 									<p style={{ color: '#7f00ff', fontWeight: 600, fontSize: '1.1rem', textAlign: 'center', marginBottom: '1.5rem' }}>
 										{planet.name} surface view
 									</p>
+									{showSurfaceLightbox && (
+										<div
+											role="dialog"
+											aria-modal="true"
+											onClick={e => { if (e.target === e.currentTarget) setShowSurfaceLightbox(false); }}
+											style={{
+												position: 'fixed',
+												top: 0,
+												left: 0,
+												width: '100vw',
+												height: '100vh',
+												background: 'rgba(0,0,0,0.92)',
+												zIndex: 20000,
+												display: 'flex',
+												alignItems: 'center',
+												justifyContent: 'center',
+												cursor: 'zoom-out',
+											}}
+										>
+											<img
+												src={getImageSrc(planet.surfaceImg)}
+												alt={planet.name + ' surface large'}
+												style={{
+													maxWidth: '90vw',
+													maxHeight: '90vh',
+													borderRadius: '2rem',
+													boxShadow: '0 0 32px 8px #7f00ffcc',
+													background: '#23223b',
+													border: '5px solid #7f00ff',
+												}}
+											/>
+											<button
+												style={{
+													position: 'absolute',
+													top: 24,
+													right: 36,
+													color: '#fff',
+													background: 'rgba(0,0,0,0.5)',
+													border: 'none',
+													borderRadius: '50%',
+													fontSize: '2.5rem',
+													fontWeight: 900,
+													cursor: 'pointer',
+													zIndex: 20001,
+													width: 48,
+													height: 48,
+													display: 'flex',
+													alignItems: 'center',
+													justifyContent: 'center',
+												}}
+												aria-label="Close large surface view"
+												onClick={e => { e.stopPropagation(); setShowSurfaceLightbox(false); }}
+											>
+												&#10005;
+											</button>
+										</div>
+									)}
 								</>
 							)}
 						</div>
@@ -408,7 +703,7 @@ export default function PlanetModal({
 							</>
 						)}
 					</div>
-				</div>
+				</motion.div>
 			</div>
 		</>
 	);

@@ -12,6 +12,7 @@ import StartExploringScreen from "./StartExploringScreen";
 
 export default function SolarSystemHome() {
 	const [selectedPlanet, setSelectedPlanet] = useState(null);
+	const [selectedPlanetIdx, setSelectedPlanetIdx] = useState(null);
 	const [exploreMode, setExploreMode] = useState(false);
 	const [stars, setStars] = useState([]);
 	const [shootingStars, setShootingStars] = useState([]);
@@ -381,12 +382,32 @@ export default function SolarSystemHome() {
 					setShowExplorerInfo(null);
 				} else if (selectedPlanet) {
 					setSelectedPlanet(null);
+					setSelectedPlanetIdx(null);
 				}
 			}
 		}
 		document.addEventListener('keydown', handleEsc);
 		return () => document.removeEventListener('keydown', handleEsc);
 	}, [selectedPlanet, showExplorerInfo]);
+
+	// Helper to open a planet modal by index (filtered, no Sun)
+	const filteredPlanets = planets.filter(p => p.name !== 'Sun');
+	const openPlanetModal = (idx) => {
+		setSelectedPlanet(filteredPlanets[idx]);
+		setSelectedPlanetIdx(idx);
+	};
+
+	// Navigation handlers (filtered)
+	const handlePrevPlanet = () => {
+		if (selectedPlanetIdx === null) return;
+		const prevIdx = (selectedPlanetIdx - 1 + filteredPlanets.length) % filteredPlanets.length;
+		openPlanetModal(prevIdx);
+	};
+	const handleNextPlanet = () => {
+		if (selectedPlanetIdx === null) return;
+		const nextIdx = (selectedPlanetIdx + 1) % filteredPlanets.length;
+		openPlanetModal(nextIdx);
+	};
 
 	return (
 		<div
@@ -752,7 +773,7 @@ export default function SolarSystemHome() {
 													}}
 													onClick={() => {
 														playClickSound();
-														setSelectedPlanet(planet);
+														openPlanetModal(i);
 													}}
 												/>
 												{hoveredPlanet === planet.name && (
@@ -834,7 +855,7 @@ export default function SolarSystemHome() {
 			{selectedPlanet && selectedPlanet.name !== 'Sun' && (
 				<PlanetModal
 					planet={selectedPlanet}
-					onClose={() => setSelectedPlanet(null)}
+					onClose={() => { setSelectedPlanet(null); setSelectedPlanetIdx(null); }}
 					getActiveExplorers={getActiveExplorers}
 					getPathRotations={getPathRotations}
 					hoveredPlanet={hoveredPlanet}
@@ -842,6 +863,10 @@ export default function SolarSystemHome() {
 					setShowExplorerInfo={setShowExplorerInfo}
 					spaceExplorers={spaceExplorers}
 					speak={speak}
+					planets={filteredPlanets}
+					planetIdx={selectedPlanetIdx}
+					onPrevPlanet={handlePrevPlanet}
+					onNextPlanet={handleNextPlanet}
 				/>
 			)}
 
