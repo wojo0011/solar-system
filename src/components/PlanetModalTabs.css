@@ -1,0 +1,111 @@
+.planet-modal-tabs {
+  position: absolute;
+  top: -3.2rem;
+  left: 2.5rem;
+  display: flex;
+  gap: 0.5rem;
+  background: #18181b;
+  border-top-left-radius: 1.5rem;
+  border-top-right-radius: 1.5rem;
+  box-shadow: 0 4px 16px 0 #0004;
+  padding: 0.15rem 0.4rem 0 0.4rem;
+  z-index: 10002;
+}
+
+
+.planet-modal-tab-info {
+  color: #ffe680;
+  background: linear-gradient(135deg, #18182b 60%, #23223b 100%);
+  border: 2.5px solid transparent;
+  outline: none;
+  font-weight: 700;
+  font-size: 1.08rem;
+  border-radius: 1.2rem 1.2rem 0 0;
+  padding: 0.6rem 1.5rem;
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
+  box-sizing: border-box;
+  position: relative;
+  z-index: 1;
+  cursor: pointer;
+  transition: all 0.18s cubic-bezier(.4,0,.2,1);
+}
+.planet-modal-tab-info.active {
+  color: #fff;
+  background: linear-gradient(135deg, #ffe68009 60%, #ffe680 100%);
+  border: 2.5px solid #ffe680;
+  outline: 2.5px solid #ffe680;
+  box-shadow: 0 0 0 3px #18182b;
+  z-index: 2;
+}
+.planet-modal-tab-info:hover,
+.planet-modal-tab-info:focus {
+  border: 2.5px solid #ffe680;
+  box-shadow: 0 0 0 3px #ffa751;
+  color: #fff;
+}
+
+
+.planet-modal-tab-surface {
+  color: #7f00ff;
+  background: linear-gradient(135deg, #18182b 60%, #23223b 100%);
+  border: 2.5px solid transparent;
+  outline: none;
+  font-weight: 700;
+  font-size: 1.08rem;
+  border-radius: 1.2rem 1.2rem 0 0;
+  padding: 0.6rem 1.5rem;
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
+  box-sizing: border-box;
+  position: relative;
+  z-index: 1;
+  cursor: pointer;
+  transition: all 0.18s cubic-bezier(.4,0,.2,1);
+}
+.planet-modal-tab-surface.active {
+  color: #fff;
+  background: linear-gradient(135deg, #1a2340 60%, #7f00ff 100%);
+  border: 2.5px solid #7f00ff;
+  outline: 2.5px solid #7f00ff;
+  box-shadow: 0 0 0 3px #18182b;
+  z-index: 2;
+}
+.planet-modal-tab-surface:hover,
+.planet-modal-tab-surface:focus {
+  border: 2.5px solid #7f00ff;
+  box-shadow: 0 0 0 3px #7f00ff55;
+  color: #fff;
+}
+
+.planet-modal-tab-moons {
+  color: #60a5fa;
+  background: linear-gradient(135deg, #18182b 60%, #23223b 100%);
+  border: 2.5px solid transparent;
+  outline: none;
+  font-weight: 700;
+  font-size: 1.08rem;
+  border-radius: 1.2rem 1.2rem 0 0;
+  padding: 0.6rem 1.5rem;
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
+  box-sizing: border-box;
+  position: relative;
+  z-index: 1;
+  cursor: pointer;
+  transition: all 0.18s cubic-bezier(.4,0,.2,1);
+}
+.planet-modal-tab-moons.active {
+  color: #fff;
+  background: linear-gradient(135deg, #1a2340 60%, #60a5fa 100%);
+  border: 2.5px solid #60a5fa;
+  outline: 2.5px solid #60a5fa;
+  box-shadow: 0 0 0 3px #60a5fa55;
+  z-index: 2;
+}
+.planet-modal-tab-moons:hover,
+.planet-modal-tab-moons:focus {
+  border: 2.5px solid #60a5fa;
+  box-shadow: 0 0 0 3px #60a5fa99;
+  color: #fff;
+}

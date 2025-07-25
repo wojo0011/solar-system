@@ -42,3 +42,46 @@
 .w-40 {
   width: 11rem; /* 40 * 0.25rem */
 }
+
+/* modal close button spin effect (global) */
+.close-btn {
+  position: absolute;
+  top: 1.2rem;
+  right: 1.2rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  background: linear-gradient(90deg, #22223b 0%, #4a4e69 100%);
+  color: white;
+  font-weight: 700;
+  font-size: 1.5rem;
+  border: none;
+  box-shadow: 0 0 12px 2px #4a4e6955;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10001;
+  padding: 0;
+  transition: background 0.3s cubic-bezier(.4,0,.2,1), color 0.3s cubic-bezier(.4,0,.2,1), box-shadow 0.3s cubic-bezier(.4,0,.2,1);
+}
+.close-x {
+  display: inline-block;
+  transition: transform 0.4s cubic-bezier(.68,-0.55,.27,1.55);
+}
+.close-btn:hover .close-x,
+.close-btn:focus .close-x {
+  transform: rotate(90deg);
+}
+.close-btn:hover,
+.close-btn:focus {
+  background: linear-gradient(90deg, #b91c1c 0%, #7f1d1d 100%);
+  color: #fff;
+  box-shadow: 0 0 0 4px #b91c1c55, 0 0 12px 2px #7f1d1d55;
+  outline: 2px solid #b91c1c;
+}
+.close-btn:active {
+  background: linear-gradient(90deg, #ef4444 0%, #b91c1c 100%);
+  color: #fff;
+  box-shadow: 0 0 0 6px #ef444455, 0 0 12px 2px #b91c1c55;
+}

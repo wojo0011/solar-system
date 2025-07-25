@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
-import { Card, CardContent } from "./ui/card";
 import { Button } from "./ui/button";
 import "./SolarSystem.css";
 import PlanetModal from "./PlanetModal";
@@ -9,6 +8,7 @@ import ExplorerModal from "./ExplorerModal";
 import planets from "../data/planets.json";
 import spaceExplorers from "../data/spaceExplorers.json";
 import StartExploringScreen from "./StartExploringScreen";
+import WishMeter from "./WishMeter";
 
 export default function SolarSystemHome() {
 	const [selectedPlanet, setSelectedPlanet] = useState(null);
@@ -22,13 +22,12 @@ export default function SolarSystemHome() {
 	const [hoveredPlanet, setHoveredPlanet] = useState(null);
 	const [zoom, setZoom] = useState(1);
 	const [showExplorerInfo, setShowExplorerInfo] = useState(null); // replaces showShuttleInfo
-	const [explorerProgress, setExplorerProgress] = useState({});
 	const audioRef = useRef(null);
 	const clickSoundRef = useRef(null);
 	const sparkleSoundRef = useRef(null);
 	const hitSoundRef = useRef(null);
-	const explorerRequestRefs = useRef({});
-
+	const [currentLanguage, setCurrentLanguage] = useState('en'); // default to English, can be set from StartExploringScreen
+	
 	// Place these hooks at the top level for all explorers
 	const explorerLocalProgress = useRef({});
 	const explorerAnimReq = useRef({});
@@ -159,23 +158,6 @@ export default function SolarSystemHome() {
 	const zoomLevels = 10;
 	const zoomStep = (maxZoom - minZoom) / (zoomLevels - 1);
 
-	// const getPlanetScreenPosition = (planetName) => {
-	// 	// Only works in explore mode and when not selectedPlanet
-	// 	if (!exploreMode || selectedPlanet) return null;
-	// 	const container = document.getElementById('solar-system-container');
-	// 	if (!container) return null;
-	// 	const rect = container.getBoundingClientRect();
-	// 	const centerX = rect.left + rect.width / 2;
-	// 	const centerY = rect.top + rect.height / 2;
-	// 	const distanceRatio = planetDistances[planetName] / maxDistance;
-	// 	const orbitRadius = maxRadius * distanceRatio * zoom;
-	// 	// Planets are placed at angle 0 (to the right of the sun)
-	// 	return {
-	// 		x: centerX + orbitRadius,
-	// 		y: centerY
-	// 	};
-	// };
-
 	const handleWheelZoom = (e) => {
 		e.preventDefault();
 		const container = document.getElementById('solar-system-container');
@@ -199,17 +181,8 @@ export default function SolarSystemHome() {
 		Neptune: 4500,
 		Pluto: 5900,
 	};
-	const baseRadius = 120; // px, Mercury's distance
 	const maxDistance = planetDistances['Pluto'];
 	const maxRadius = 1000; // px, Pluto's distance
-
-	// Calculate pan offset to center a planet
-	function getPanOffset(planetName) {
-		if (!planetName || planetName === 'Sun') return { x: 0, y: 0 };
-		const distanceRatio = planetDistances[planetName] / maxDistance;
-		const orbitRadius = maxRadius * distanceRatio;
-		return { x: orbitRadius, y: 0 };
-	}
 
 	const labelFontSizes = [
 		{ zoom: 0.4, size: 4.5 },
@@ -251,20 +224,6 @@ export default function SolarSystemHome() {
 		// We'll show the distance from the sun to the edge (Pluto's orbit) divided by zoom.
 		const visibleDistance = maxDistance / zoom; // in millions of km
 		return visibleDistance * 1_000_000; // in km
-	}
-
-	// Helper to get the closest planet (or Sun) for the current zoom level
-	function getClosestPlanetAndDistance() {
-		// Include Sun for zoom level 1
-		const zoomLevels = planets.length; // 11 (Sun + 10 planets)
-		// Map zoom to discrete levels: 1 (Sun) to 11 (Pluto)
-		const t = (zoom - minZoom) / (maxZoom - minZoom);
-		const idx = Math.round((1 - t) * (zoomLevels - 1));
-		const planet = planets[Math.max(0, Math.min(idx, planets.length - 1))];
-		return {
-			name: planet.name,
-			distance: planet.distanceFromSun * 1_000_000
-		};
 	}
 
 	// Helper to get the current zoom level index (0=Sun, 1=Mercury, ..., 10=Pluto)
@@ -309,7 +268,6 @@ export default function SolarSystemHome() {
 	useEffect(() => {
 		if (!exploreMode || selectedPlanet) return;
 		const activeExplorers = getActiveExplorers();
-		const animState = {};
 		const startTimestamps = {};
 
 		// Reset animation state for new explorers or zoom changes
@@ -366,13 +324,16 @@ export default function SolarSystemHome() {
 
 		explorerAnimReq.current.global = requestAnimationFrame(animateAll);
 
+		// Copy the ref value to a local variable for cleanup
+		const localAnimReq = explorerAnimReq.current;
+
 		return () => {
-			if (explorerAnimReq.current.global) {
-				cancelAnimationFrame(explorerAnimReq.current.global);
+			if (localAnimReq.global) {
+				cancelAnimationFrame(localAnimReq.global);
 			}
 		};
 	// eslint-disable-next-line
-	}, [exploreMode, selectedPlanet, hoveredPlanet, showExplorerInfo, explorerProgress, zoom]);
+	}, [exploreMode, selectedPlanet, hoveredPlanet, showExplorerInfo, zoom]);
 
 	// Close only the topmost modal on Escape key
 	useEffect(() => {
@@ -391,21 +352,26 @@ export default function SolarSystemHome() {
 	}, [selectedPlanet, showExplorerInfo]);
 
 	// Helper to open a planet modal by index (filtered, no Sun)
-	const filteredPlanets = planets.filter(p => p.name !== 'Sun');
 	const openPlanetModal = (idx) => {
-		setSelectedPlanet(filteredPlanets[idx]);
+		setSelectedPlanet(planets[idx]);
 		setSelectedPlanetIdx(idx);
 	};
 
 	// Navigation handlers (filtered)
 	const handlePrevPlanet = () => {
 		if (selectedPlanetIdx === null) return;
-		const prevIdx = (selectedPlanetIdx - 1 + filteredPlanets.length) % filteredPlanets.length;
+		if( selectedPlanetIdx === 0) {
+			const sun = planets.find(p => p.name === 'Sun');
+			console.log("Setting selected planet to Sun", sun);
+			setSelectedPlanet(sun);
+		} 
+
+		const prevIdx = (selectedPlanetIdx - 1 + planets.length) % planets.length;
 		openPlanetModal(prevIdx);
 	};
 	const handleNextPlanet = () => {
 		if (selectedPlanetIdx === null) return;
-		const nextIdx = (selectedPlanetIdx + 1) % filteredPlanets.length;
+		const nextIdx = (selectedPlanetIdx + 1) % planets.length;
 		openPlanetModal(nextIdx);
 	};
 
@@ -414,6 +380,8 @@ export default function SolarSystemHome() {
 			className="min-h-screen bg-black p-6 flex flex-col items-center justify-center relative overflow-hidden"
 			onMouseMove={handleMouseMove}
 			onWheel={exploreMode ? handleWheelZoom : undefined}
+			role="region"
+			tabIndex={0}
 		>
 			<div className="absolute inset-0 z-0" style={{ pointerEvents: 'none', zIndex: 0 }}>
 				{stars.map((star, index) => (
@@ -487,7 +455,10 @@ export default function SolarSystemHome() {
 							}}
 						>
 							{/* Make the clickable star head pointerEvents: auto and higher zIndex */}
-							<div
+							<button
+								type="button"
+								aria-label="Catch shooting star"
+								tabIndex={0}
 								style={{
 									position: "absolute",
 									width: "60px",
@@ -497,12 +468,18 @@ export default function SolarSystemHome() {
 									cursor: "pointer",
 									zIndex: 101, // ensure above trail
 									pointerEvents: "auto",
-									transform: `rotate(${star.angle}deg)`,
-									transformOrigin: "0 0",
+									background: "transparent",
+									border: "none",
+									padding: 0,
 								}}
 								onClick={e => handleShootingStarClick(star, e)}
 								onMouseEnter={() => setHoveredStar(star.id)}
 								onMouseLeave={() => setHoveredStar(null)}
+								onKeyDown={e => {
+									if (e.key === "Enter" || e.key === " ") {
+										handleShootingStarClick(star, e);
+									}
+								}}
 							>
 								{hoveredStar === star.id && (
 									<div
@@ -521,7 +498,7 @@ export default function SolarSystemHome() {
 										}}
 									></div>
 								)}
-							</div>
+							</button>
 							{/* Trail is not clickable */}
 							<div
 								style={{
@@ -707,7 +684,7 @@ export default function SolarSystemHome() {
 								const now = Date.now();
 								const orbitProgress = ((now / 1000) % duration) / duration; // 0..1
 								const labelAngle = (-(orbitProgress * 360) % 360) - planet.labelRotation;
-								console.log(`${planet.name} orbitRadius: ${orbitRadius}, duration: ${duration}, adjustedOrbitRadius: ${adjustedOrbitRadius}, angle: ${labelAngle.toFixed(2)}°`);
+								// console.log(`${planet.name} orbitRadius: ${orbitRadius}, duration: ${duration}, adjustedOrbitRadius: ${adjustedOrbitRadius}, angle: ${labelAngle.toFixed(2)}°`);
 
 								return (
 									<div
@@ -739,7 +716,7 @@ export default function SolarSystemHome() {
 												animation: `orbit${i} ${duration}s linear infinite`,
 											}}
 											onMouseEnter={() => {
-												console.log(`Planet "${planet.name}" orbit animation: orbit${i}, duration: ${duration}s, orbitRadius: ${orbitRadius}`);
+												// console.log(`Planet "${planet.name}" orbit animation: orbit${i}, duration: ${duration}s, orbitRadius: ${orbitRadius}`);
 											}}
 										>
 											<div style={{ position: "relative", width: planetSize, height: planetSize }}>
@@ -816,25 +793,7 @@ export default function SolarSystemHome() {
 				</>
 			)}
 
-			{/* Wish Meter styled like Zoom Meter */}
-			<div
-				style={{
-					position: 'fixed',
-					left: '2rem',
-					top: '2rem',
-					background: 'rgba(0,0,0,0.7)',
-					color: '#ffe680',
-					fontWeight: 'bold',
-					fontSize: '1.5rem',
-					padding: '0.75rem 1.5rem',
-					borderRadius: '1rem',
-					zIndex: 100,
-					boxShadow: '0 2px 12px #000a',
-					letterSpacing: '0.05em',
-				}}
-			>
-				⭐ Wish Meter: {caughtStars}
-			</div>
+			<WishMeter caughtStars={caughtStars} currentLanguage={currentLanguage} />
 
 			{!exploreMode && (
 				<StartExploringScreen
@@ -842,14 +801,17 @@ export default function SolarSystemHome() {
 						setExploreMode(true);
 						startMusic();
 					}}
+					setCurrentLanguage={setCurrentLanguage}
+					currentLanguage={currentLanguage}
 				/>
 			)}
 
 			{selectedPlanet && selectedPlanet.name === 'Sun' && (
 				<SunModal
-					sun={selectedPlanet}
-					onClose={() => setSelectedPlanet(null)}
 					speak={speak}
+					setSelectedPlanet={setSelectedPlanet}
+					setSelectedPlanetIdx={setSelectedPlanetIdx}
+					planets={planets}
 				/>
 			)}
 			{selectedPlanet && selectedPlanet.name !== 'Sun' && (
@@ -863,10 +825,11 @@ export default function SolarSystemHome() {
 					setShowExplorerInfo={setShowExplorerInfo}
 					spaceExplorers={spaceExplorers}
 					speak={speak}
-					planets={filteredPlanets}
+					planets={planets}
 					planetIdx={selectedPlanetIdx}
 					onPrevPlanet={handlePrevPlanet}
 					onNextPlanet={handleNextPlanet}
+					setSelectedPlanet={setSelectedPlanet}
 				/>
 			)}
 

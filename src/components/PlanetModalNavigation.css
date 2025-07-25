@@ -1,0 +1,203 @@
+.planet-modal-navigation-arrow-container {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10003;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    pointer-events: auto;
+}
+.planet-modal-navigation-arrow-container.left {
+    left: -3.7rem;
+}
+
+.planet-modal-navigation-arrow-container.right {
+    right: -4.3rem;
+}
+
+.planet-modal-navigation-arrow-container-button {
+    background: linear-gradient(90deg, rgb(34, 34, 59) 0%, rgb(74, 78, 105) 100%);
+    color: white;
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: 1;
+    padding: 0;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: 9999px;
+    box-shadow: 0 8px 32px 0 rgba(0,0,0,0.18), 0 1.5px 6px 0 #ffe68055;
+    cursor: pointer;
+    overflow: visible;
+    opacity: 1;
+    outline: none;
+    transition: 'background' 0.2s, color 0.2s;
+}
+
+.planet-modal-navigation-arrow {
+    display: block;
+    width: 100%;
+    text-align: center;
+    z-index: 2;
+    position: relative;
+}
+
+.zoom-ring {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    border: 3px solid #ffe680;
+    opacity: 0;
+    transition: opacity 0.2s;
+    pointer-events: none;
+}
+
+.next-planet-zoom-ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 95%;
+  height: 95%;
+  border-radius: 50%;
+  border: 3px solid #ffe680;
+  opacity: 0;
+  transition: opacity 0.2s;
+  pointer-events: none;
+}
+
+.mercury-sun-zoom-ring {
+  position: absolute;
+  top: 50%;
+  left: 29%;
+  transform: translate(-50%, -50%);
+  width: 102%;
+  height: 102%;
+  border-radius: 50%;
+  border: 3px solid #ffe680;
+  opacity: 0;
+  transition: opacity 0.2s;
+  pointer-events: none;
+}
+
+.mercury-button-container {
+  position: absolute;
+  top: 50%;
+  left: -3.7rem;
+  transform: translateY(-50%);
+  z-index: 10003;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  pointer-events: auto;
+}
+
+.mercury-sun-button {
+  background: transparent;
+  width: 3.2rem;
+  height: 3.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  overflow: visible;
+  opacity: 1;
+  outline: none;
+  padding-right: 2em;
+  transition: background 0.2s, color 0.2s;
+}
+
+.next-planet-button {
+  background: transparent;
+  width: 3.7rem;
+  height: 3.7rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  overflow: visible;
+  opacity: 1;
+  outline: none;
+  transition: background 0.2s, color 0.2s;
+}
+
+.mercury-sun-img {
+  width: 4.6rem;
+  height: 4.6rem;
+  display: block;
+  object-fit: cover;
+  pointer-events: none;
+  border-radius: 50%;
+}
+
+.previous-planet-container {
+  position: absolute;
+  top: 50%;
+  left: -3.7rem;
+  transform: translateY(-50%);
+  z-index: 10003;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  pointer-events: auto;
+}
+
+
+.pluto-planet-modal-sun-img {
+  	background: transparent;
+    width: 4.6em;
+    height: 4.6rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    cursor: pointer;
+    position: relative;
+    overflow: visible;
+    opacity: 1;
+    padding-left:2em;
+    outline: none;
+    transition: 'background 0.2s, color 0.2s';
+}
+
+.pluto-sun-zoom-ring {
+  position: absolute;
+  top: 50%;
+  left: 49%;
+  width: 88%;
+  height: 92%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  border: 3px solid #ffe680;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+
+.sun {
+  background: transparent; 
+  width: 3.7rem; 
+  height: 3.7rem; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  border: none; 
+  cursor: pointer; position: relative; 
+  overflow: visible; 
+  opacity: 1; 
+  outline: none; 
+  padding-right: 2em; 
+  transition: background 0.2s, color 0.2s;
+}
+

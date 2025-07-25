@@ -1,0 +1,30 @@
+{
+  "en": {
+    "tooltips": {
+      "languageSwitcher": "Choose your language!",
+      "readAloud": "Hear the narrator's friendly voice!",
+      "exploreButton": "Blast off to adventure!"
+    }
+  },
+  "fr": {
+    "tooltips": {
+      "languageSwitcher": "Choisissez votre langue !",
+      "readAloud": "Écoutez la voix du narrateur !",
+      "exploreButton": "En route pour l'aventure !"
+    }
+  },
+  "pl": {
+    "tooltips": {
+      "languageSwitcher": "Wybierz swój język!",
+      "readAloud": "Usłysz głos narratora!",
+      "exploreButton": "Wyrusz na przygodę!"
+    }
+  },
+  "ceb": {
+    "tooltips": {
+      "languageSwitcher": "Pilia ang imong pinulongan!",
+      "readAloud": "Paminawa ang tingog sa tagasaysay!",
+      "exploreButton": "Sugdi ang adventure!"
+    }
+  }
+}

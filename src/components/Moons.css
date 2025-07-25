@@ -1,0 +1,4 @@
+.dummy-holder {
+  visibility: hidden;
+  pointer-events: none;
+}

@@ -1,0 +1,63 @@
+{
+  "languages": ["en", "fr", "pl", "ceb"],
+  "en": {
+    "title": "🌞 Meet Our Solar System!",
+    "messages": [
+      "Welcome to our amazing Solar System! 🌞🚀",
+      "There are planets big and small, each with cool secrets.",
+      "Some are rocky, some are gassy, and some are icy!",
+      "The Sun is our star, giving us light and warmth.",
+      "Are you ready to blast off and explore? Let's go!"
+    ],
+    "readAloud": {
+      "start": "🔊 Read Aloud",
+      "stop": "⏹️ Stop Reading"
+    },
+    "exploreButton": "Start Exploring!"
+  },
+  "fr": {
+    "title": "🌞 Découvrez notre système solaire!",
+    "messages": [
+      "Bienvenue dans notre incroyable système solaire! 🌞🚀",
+      "Il y a des planètes grandes et petites, chacune avec de super secrets.",
+      "Certaines sont rocheuses, d'autres gazeuses, et d'autres glacées!",
+      "Le Soleil est notre étoile, nous donnant lumière et chaleur.",
+      "Prêt à décoller et explorer? Allons-y!"
+    ],
+    "readAloud": {
+      "start": "🔊 Lire à haute voix",
+      "stop": "⏹️ Arrêter la lecture"
+    },
+    "exploreButton": "Commencer l'exploration!"
+  },
+  "pl": {
+    "title": "🌞 Poznaj nasz Układ Słoneczny!",
+    "messages": [
+      "Witamy w naszym niesamowitym Układzie Słonecznym! 🌞🚀",
+      "Są planety duże i małe, każda z ciekawymi tajemnicami.",
+      "Niektóre są skaliste, inne gazowe, a jeszcze inne lodowe!",
+      "Słońce to nasza gwiazda, daje nam światło i ciepło.",
+      "Gotowy na start i odkrywanie? Ruszamy!"
+    ],
+    "readAloud": {
+      "start": "🔊 Czytaj na głos",
+      "stop": "⏹️ Zatrzymaj czytanie"
+    },
+    "exploreButton": "Zacznij odkrywać!"
+  },
+  "ceb": {
+    "title": "🌞 Ilaila ang Atong Solar System!",
+    "messages": [
+      "Welcome sa atong katingalahang Solar System! 🌞🚀",
+      "Dunay dagkong planeta ug gagmay, ug ang matag usa adunay mga tinagong sekreto.",
+      "Ang uban bató, ang uban gas, ug ang uban bugnaw kaayo!",
+      "Ang Adlaw mao ang atong bituon, naghatag ug kahayag ug kainit.",
+      "Andam na ba ka mo-explore? Tara, larga ta!"
+    ],
+    "readAloud": {
+      "start": "🔊 Basa Pahinungod",
+      "stop": "⏹️ Hunong Basa"
+    },
+    "exploreButton": "Sugdi ang Pag-ila!"
+  }
+}

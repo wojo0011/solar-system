@@ -1,0 +1,110 @@
+.explorer-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.7);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.explorer-modal {
+  background: #18181b;
+  border-radius: 1.5rem;
+  padding: 2rem 2.5rem;
+  box-shadow: 0 8px 32px #000a;
+  max-width: 900px;
+  width: 100%;
+  text-align: left;
+  position: relative;
+  display: flex;
+  gap: 2rem;
+  align-items: stretch;
+  min-height: 0;
+}
+
+.explorer-modal-close {
+  position: absolute;
+  top: 1.2rem;
+  right: 1.2rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  background: linear-gradient(90deg, #22223b 0%, #4a4e69 100%);
+  color: white;
+  font-weight: 700;
+  font-size: 1.5rem;
+  border: none;
+  box-shadow: 0 0 12px 2px #4a4e6955;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10001;
+  padding: 0;
+}
+
+.explorer-modal-left {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  min-width: 400px;
+  max-width: 400px;
+  flex: 0 0 400px;
+}
+
+.explorer-modal-title {
+  color: #ffe680;
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0;
+  margin-bottom: 0.5rem;
+  text-align: center;
+}
+
+.explorer-modal-img {
+  width: 100%;
+  max-width: 400px;
+  height: auto;
+  aspect-ratio: 1/1;
+  object-fit: contain;
+  border-radius: 1rem;
+  margin-bottom: 1rem;
+  background: #22223b;
+  box-shadow: 0 2px 12px #0006;
+}
+
+.explorer-modal-years {
+  color: #a5b4fc;
+  font-size: 1.1rem;
+  margin-bottom: 0;
+  font-weight: 600;
+  text-align: center;
+}
+
+.explorer-modal-right {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  min-width: 0;
+}
+
+.explorer-modal-desc {
+  color: #fff;
+  font-size: 1.1rem;
+  margin-bottom: 1.5rem;
+  line-height: 1.6;
+  word-break: break-word;
+}
+
+.explorer-modal-read-btns {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-start;
+}

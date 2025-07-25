@@ -1,0 +1,47 @@
+{
+  "en": {
+    "label": "English",
+    "voice": "en-US",
+    "languages": {
+      "en": "English",
+      "fr": "French",
+      "pl": "Polish",
+      "ceb": "Bisaya"
+    },
+    "select": "Select Language"
+  },
+  "fr": {
+    "label": "Français",
+    "voice": "fr-FR",
+    "languages": {
+      "en": "Anglais",
+      "fr": "Français",
+      "pl": "Polonais",
+      "ceb": "Bisaya"
+    },
+    "select": "Choisir la langue"
+  },
+  "pl": {
+    "label": "Polski",
+    "voice": "pl-PL",
+    "languages": {
+      "en": "Angielski",
+      "fr": "Francuski",
+      "pl": "Polski",
+      "ceb": "Bisaya"
+    },
+    "select": "Wybierz język"
+  },
+  "ceb": {
+    "label": "Bisaya",
+    "voice": "fil-PH",
+    "fallback": "en-US",
+    "languages": {
+      "en": "Iningles",
+      "fr": "Pranses",
+      "pl": "Polako",
+      "ceb": "Bisaya"
+    },
+    "select": "Pilia ang Pinulongan"
+  }
+}

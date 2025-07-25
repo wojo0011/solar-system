@@ -1,0 +1,51 @@
+/* --- Playful Tooltips --- */
+.tooltip {
+  position: absolute;
+  left: 50%;
+  top: 105%;
+  transform: translateX(-50%) scale(0.95);
+  background: linear-gradient(90deg, #191919 0%, #161616 100%);
+  color: #fff;
+  padding: 0.6em 1.2em;
+  border-radius: 1.2em;
+  font-size: 1.05rem;
+  font-weight: 700;
+  box-shadow: 0 2px 12px 0 #0003;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 100;
+  transition: opacity 0.3s, transform 0.3s;
+  white-space: nowrap;
+  user-select: none;
+  border: 2px solid #000000;
+  animation: tooltipPop 0.5s;
+}
+
+@keyframes tooltipPop {
+  0% { opacity: 0; transform: translateX(-50%) scale(0.7); }
+  60% { opacity: 1; transform: translateX(-50%) scale(1.08); }
+  100% { opacity: 1; transform: translateX(-50%) scale(0.95); }
+}
+
+/* Show tooltip on parent hover/focus */
+.tooltip-parent:hover .tooltip,
+.tooltip-parent:focus .tooltip {
+  opacity: 1;
+  transform: translateX(-50%) scale(1);
+  pointer-events: auto;
+}
+
+/* --- Tooltip Parent Layout --- */
+.tooltip-parent {
+  position: relative;
+  width: fit-content;
+  display: inline-block;
+}
+
+.tooltip-parent.language-switcher {
+  margin-bottom: 1.2em;
+}
+
+.tooltip-parent.centered {
+  margin: 0 auto;
+}

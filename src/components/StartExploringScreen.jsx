@@ -1,26 +1,37 @@
 import React from "react";
 import { Button } from "./ui/button";
 import NarratorAstronaut from "./NarratorAstronaut";
+import LanguageSwitcher from "./LanguageSwitcher";
+import "./StartExploringScreen.css";
+import startExploringDataRaw from "../data/startExploring.json";
+import languages from "../data/languages.json";
+import spaceExploration from "../data/spaceExploration.json";
+import {
+  getVoices,
+  stripIcons,
+  getPreferredVoice,
+  speakMessage,
+  cancelSpeech
+} from "../utils/speechSynthesis";
+import ReadAloudButton from "./ReadAloudButton";
+import Tooltip from "./Tooltip";
+
+// TooltipParent HOC/component for easy tooltip wrapping
+function TooltipParent({ tooltip, children, className = "", ...props }) {
+  return (
+    <div className={`tooltip-parent${className ? " " + className : ""}`} {...props}>
+      {children}
+      {tooltip ? <Tooltip>{tooltip}</Tooltip> : null}
+    </div>
+  );
+}
 
 // AnimatedMessage: cycles through messages with fade-in animation
 function AnimatedMessage({ messages, currentIndex }) {
   return (
     <div
       key={currentIndex}
-      style={{
-        color: '#ffe680',
-        fontSize: '1.35rem',
-        maxWidth: 600,
-        textAlign: 'center',
-        marginBottom: '2.5rem',
-        lineHeight: 1.6,
-        fontWeight: 500,
-        letterSpacing: 0.1,
-        minHeight: 80,
-        transition: 'opacity 0.7s',
-        opacity: 1,
-        animation: 'fadeIn 0.7s',
-      }}
+      className="start-exploring-screen-animated-message"
       aria-live="polite"
     >
       {messages[currentIndex]}
@@ -34,89 +45,132 @@ function AnimatedMessage({ messages, currentIndex }) {
   );
 }
 
-export default function StartExploringScreen({ onStart }) {
+export default function StartExploringScreen({ onStart, currentLanguage, setCurrentLanguage }) {
   const [isReading, setIsReading] = React.useState(false);
   const [voices, setVoices] = React.useState([]);
   const [msgIndex, setMsgIndex] = React.useState(0);
   const [visible, setVisible] = React.useState(true);
   const screenRef = React.useRef(null);
-  const messages = [
-    "Welcome to our amazing Solar System! 🌞🚀",
-    "There are planets big and small, each with cool secrets.",
-    "Some are rocky, some are gassy, and some are icy!",
-    "The Sun is our star, giving us light and warmth.",
-    "Are you ready to blast off and explore? Let's go!"
-  ];
+  const timerRef = React.useRef();
+  const utterRef = React.useRef();
 
-  // Cycle messages every 6s (slower for kids)
-  React.useEffect(() => {
-    const timer = setInterval(() => {
-      setMsgIndex(i => (i + 1) % messages.length);
-    }, 6000);
-    return () => clearInterval(timer);
+  // Get language data safely
+  const langData = startExploringDataRaw[currentLanguage] || startExploringDataRaw.en;
+  const messages = React.useMemo(() => langData.messages || [], [langData]);
+  const tooltips = (spaceExploration[currentLanguage]?.tooltips) || spaceExploration.en.tooltips;
+
+  // Helper to advance to next message
+  const nextMessage = React.useCallback(() => {
+    setMsgIndex(i => (i + 1) % messages.length);
   }, [messages.length]);
+
+  // Cycle messages every 6s (slower for kids) when not reading aloud
+  React.useEffect(() => {
+    if (!isReading) {
+      timerRef.current = setInterval(() => {
+        nextMessage();
+      }, 6000);
+      return () => clearInterval(timerRef.current);
+    } else {
+      clearInterval(timerRef.current);
+    }
+  }, [isReading, nextMessage]);
 
   // Load voices on mount and when voiceschanged fires
   React.useEffect(() => {
+    let mounted = true;
+    getVoices().then(vs => {
+      if (mounted) setVoices(vs);
+    });
     const updateVoices = () => {
-      setVoices(window.speechSynthesis.getVoices());
+      getVoices().then(vs => {
+        if (mounted) setVoices(vs);
+      });
     };
-    updateVoices();
     window.speechSynthesis.addEventListener('voiceschanged', updateVoices);
     return () => {
+      mounted = false;
       window.speechSynthesis.removeEventListener('voiceschanged', updateVoices);
     };
   }, []);
 
+  // When message changes and isReading, speak it and advance after
   React.useEffect(() => {
-    return () => {
-      if (window.speechSynthesis) {
-        window.speechSynthesis.cancel();
-      }
+    let cancelled = false;
+    if (!isReading) {
+      cancelSpeech();
+      return;
+    }
+    const langInfo = languages[currentLanguage] || languages.en;
+    const utterLang = langInfo.voice || 'en-US';
+    const fallbackLang = langInfo.fallback || 'en-US';
+    const messageToSpeak = stripIcons(messages[msgIndex]);
+    const fallbackVoice = voices.find(v => v.lang.startsWith('en'));
+    const onEnd = () => {
+      if (cancelled) return;
+      setTimeout(() => {
+        setMsgIndex(i => {
+          const next = (i + 1) % messages.length;
+          if (isReading && !cancelled) {
+            setTimeout(() => {
+              if (isReading && !cancelled) {
+                speakMessage({
+                  text: messages[next],
+                  lang: utterLang,
+                  voices,
+                  fallbackLang,
+                  fallbackVoice,
+                  onEnd,
+                });
+              }
+            }, 0);
+          }
+          return next;
+        });
+      }, 3000);
     };
-  }, []);
+    speakMessage({
+      text: messageToSpeak,
+      lang: utterLang,
+      voices,
+      fallbackLang,
+      fallbackVoice,
+      onEnd,
+    });
+    return () => {
+      cancelled = true;
+      cancelSpeech();
+    };
+  }, [isReading, msgIndex, messages, voices, currentLanguage]);
 
+  // Reset reading state and timers when language changes
   React.useEffect(() => {
-    const handleStart = () => setIsReading(true);
-    window.speechSynthesis.addEventListener('start', handleStart);
-    return () => {
-      window.speechSynthesis.removeEventListener('start', handleStart);
-    };
-  }, []);
-
-  const getAstroVoice = () => {
-    if (!voices.length) return null;
-    const preferred = voices.find(v =>
-      /Google (US|UK) English|Microsoft (Aria|Jenny|Guy|Zira|David)/i.test(v.name)
-    );
-    return (
-      preferred ||
-      voices.find(v => v.lang.startsWith('en') && v.gender === 'female') ||
-      voices.find(v => v.lang.startsWith('en')) ||
-      voices[0]
-    );
-  };
-
-  const handleSpeak = (text) => {
     if (isReading) {
-      if (window.speechSynthesis) {
-        window.speechSynthesis.cancel();
-      }
+      cancelSpeech();
+      setTimeout(() => {
+        setIsReading(true);
+      }, 100);
+    } else {
+      cancelSpeech();
+      setIsReading(false);
+    }
+    setMsgIndex(0);
+  }, [currentLanguage]);
+
+  React.useEffect(() => {
+    return () => {
+      cancelSpeech();
+    };
+  }, []);
+
+  const handleSpeak = () => {
+    if (isReading) {
+      window.speechSynthesis.cancel();
       setIsReading(false);
       return;
     }
-    if (window.speechSynthesis) {
-      window.speechSynthesis.cancel();
-    }
     setIsReading(true);
-    setTimeout(() => {
-      const utterance = new window.SpeechSynthesisUtterance(text);
-      const voice = getAstroVoice();
-      if (voice) utterance.voice = voice;
-      utterance.onend = () => setIsReading(false);
-      utterance.onerror = () => setIsReading(false);
-      window.speechSynthesis.speak(utterance);
-    }, 750);
+    // Do NOT reset msgIndex; start reading from the current message
   };
 
   // Animate in on mount
@@ -153,59 +207,39 @@ export default function StartExploringScreen({ onStart }) {
   return (
     <div
       ref={screenRef}
-      className="flex flex-col items-center justify-center min-h-screen bg-black"
-      style={{
-        opacity: 1,
-        transform: 'scale(1)',
-        transition: 'opacity 0.7s, transform 0.7s',
-      }}
+      className="start-exploring-screen"
     >
+      <TooltipParent tooltip={tooltips.languageSwitcher} className="language-switcher">
+        <LanguageSwitcher currentLanguage={currentLanguage} setCurrentLanguage={setCurrentLanguage} />
+      </TooltipParent>
       <NarratorAstronaut isVisible={isReading} style={{ cursor: 'pointer' }} />
-      <h1 className="text-5xl font-bold text-white mb-8 z-10" style={{ textAlign: 'center' }}>
-        🌞 Meet Our Solar System!
+      <h1 className="start-exploring-screen-title">
+        {langData.title}
       </h1>
       <AnimatedMessage messages={messages} currentIndex={msgIndex} />
-      <Button
-        style={{
-          background: isReading
-            ? 'linear-gradient(90deg, #7f00ff 0%, #3a3aff 100%)'
-            : 'linear-gradient(90deg, #3a3aff 0%, #7f00ff 100%)',
-          color: 'white',
-          fontWeight: 600,
-          fontSize: '1.1rem',
-          padding: '0.75rem 1.5rem',
-          borderRadius: '9999px',
-          cursor: 'pointer',
-          border: 'none',
-          boxShadow: '0 0 12px 2px #3a3aff55',
-          opacity: 1,
-          transition: 'background 0.2s, opacity 0.2s',
-          marginBottom: '2.5rem',
-        }}
-        onClick={() => handleSpeak(messages[msgIndex])}
-      >
-        {isReading ? '⏹️ Stop Reading' : '🔊 Read Aloud'}
-      </Button>
-      <Button
-        className="text-5xl font-bold px-20 py-7 rounded-full shadow-lg mb-10 z-50 hover:shadow-2xl transition duration-300"
-        style={{
-          background: 'linear-gradient(90deg, #ffe259 0%, #ffa751 100%)',
-          color: '#22223b',
-          fontWeight: 800,
-          fontSize: '2rem',
-          padding: '1.5rem 3.5rem',
-          borderRadius: '9999px',
-          cursor: 'pointer',
-          border: 'none',
-          boxShadow: '0 0 24px 6px #ffe68055',
-          opacity: 1,
-          transition: 'background 0.2s, opacity 0.2s',
-        }}
-        onClick={handleStartWithAnimation}
-      >
-        <span role="img" aria-label="Rocket" style={{ marginRight: 16, fontSize: '2.2rem', verticalAlign: 'middle' }}>🚀</span>
-        Start Exploring!
-      </Button>
+      <ReadAloudButton
+        isReading={isReading}
+        onClick={handleSpeak}
+        labelStart={langData.readAloud.start}
+        labelStop={langData.readAloud.stop}
+        tooltip={tooltips.readAloud}
+      />
+      <TooltipParent tooltip={tooltips.exploreButton} className="centered">
+        <Button
+          className="start-exploring-screen-explore-btn"
+          onClick={handleStartWithAnimation}
+        >
+          <img 
+            src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36'><text x='0' y='32' font-size='32'>🚀</text></svg>" 
+            alt="Rocket" 
+            className="start-exploring-screen-rocket"
+          />
+          {langData.exploreButton}
+        </Button>
+      </TooltipParent>
+      <footer className="start-exploring-screen-footer">
+        &copy; {new Date().getFullYear()} corewebmedia
+      </footer>
     </div>
   );
 }

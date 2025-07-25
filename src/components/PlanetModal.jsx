@@ -1,8 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { Button } from "./ui/button";
 import { motion } from "framer-motion";
-
 import NarratorAstronaut from "./NarratorAstronaut";
+import "./PlanetModal.css";
+import Moons from "./Moons";
+import PlanetModalTabs from "./PlanetModalTabs";
+import PlanetModalRightNavigation from "./PlanetModalRightNavigation";
+import PlanetModalLeftNavigation from "./PlanetModalLeftNavigation";
+import PlanetInfoLeft from "./PlanetInfoLeft";
+import PlanetSurfaceLeft from "./PlanetSurfaceLeft";
+import PlanetInfoRight from "./PlanetInfoRight";
+import PlanetSurfaceRight from "./PlanetSurfaceRight";
 
 // Props:
 // planet, onClose, getActiveExplorers, getPathRotations, hoveredPlanet, setHoveredPlanet, setShowExplorerInfo, spaceExplorers, speak
@@ -20,16 +28,20 @@ export default function PlanetModal({
 	planetIdx = 0,
 	onPrevPlanet,
 	onNextPlanet,
+	setSelectedPlanet
 }) {
 	// Filter out the Sun for navigation/indexing logic
 	const filteredPlanets = planets.filter(p => p.name !== 'Sun');
+	const sun = planets.find(p => p.name === 'Sun');
 	// Find the correct index of the current planet in the filtered list
 	const filteredIdx = filteredPlanets.findIndex(p => p.name === planet.name);
 
 	const [isReading, setIsReading] = useState(false);
 	const [voices, setVoices] = useState([]);
-	const [tab, setTab] = useState('info'); // 'info' or 'surface'
+	const [tab, setTab] = useState('info'); // 'info', 'surface', or 'moons'
 	const [showSurfaceLightbox, setShowSurfaceLightbox] = useState(false);
+	const [showPlanetInfoLightbox, setShowPlanetInfoLightbox] = useState(false);
+	const [selectedMoonIdx, setSelectedMoonIdx] = useState(0);
 
 	// Load voices on mount and when voiceschanged fires
 	useEffect(() => {
@@ -111,6 +123,16 @@ export default function PlanetModal({
 				// Don't allow left/right to navigate planets while lightbox is open
 				return;
 			}
+			if(showPlanetInfoLightbox) {
+				if (e.key === 'Escape') {
+					e.preventDefault();
+					setShowPlanetInfoLightbox(false);
+					return;
+				}
+				// Don't allow left/right to navigate planets while lightbox is open
+				return;
+			}
+
 			if (tab !== 'info' && tab !== 'surface') return;
 			if (e.key === 'ArrowLeft' && filteredIdx > 0) {
 				e.preventDefault();
@@ -123,7 +145,7 @@ export default function PlanetModal({
 		};
 		document.addEventListener('keydown', handleKeyDown, true);
 		return () => document.removeEventListener('keydown', handleKeyDown, true);
-	}, [filteredIdx, filteredPlanets, onPrevPlanet, onNextPlanet, tab, showSurfaceLightbox]);
+	}, [filteredIdx, filteredPlanets, onPrevPlanet, onNextPlanet, tab, showSurfaceLightbox, showPlanetInfoLightbox]);
 
 	function getImageSrc(img) {
 		if (!img) return '';
@@ -138,18 +160,7 @@ export default function PlanetModal({
 		<>
 			<NarratorAstronaut isVisible={isReading}/>
 			<div
-				style={{
-					position: 'fixed',
-					top: 0,
-					left: 0,
-					width: '100vw',
-					height: '100vh',
-					background: 'rgba(0,0,0,0.7)',
-					zIndex: 9999,
-					display: 'flex',
-					alignItems: 'center',
-					justifyContent: 'center',
-				}}
+				className="planet-modal-overlay"
 				onClick={e => {
 					if (isReading) {
 						if (window.speechSynthesis) {
@@ -167,542 +178,194 @@ export default function PlanetModal({
 					animate={{ opacity: 1, scale: 1 }}
 					exit={{ opacity: 0, scale: 0.85 }}
 					transition={{ duration: 0.45, ease: 'easeOut' }}
-					style={{
-						background: '#18181b',
-						borderRadius: '1.5rem',
-						padding: '2.5rem 2.5rem',
-						boxShadow: '0 8px 32px #000a',
-						maxWidth: 700,
-						minWidth: 520,
-						minHeight: 520,
-						textAlign: 'left',
-						position: 'relative',
-						display: 'flex',
-						flexDirection: 'row',
-						alignItems: 'center',
-						gap: '2.5rem',
-					}}
+					className="planet-modal"
 					onClick={e => e.stopPropagation()}
 				>
 					{/* Close button in top right */}
 					<Button
+						className="close-btn"
 						onClick={onClose}
-						style={{
-							position: 'absolute',
-							top: '1.2rem',
-							right: '1.2rem',
-							width: '2.5rem',
-							height: '2.5rem',
-							borderRadius: '50%',
-							background: 'linear-gradient(90deg, #22223b 0%, #4a4e69 100%)',
-							color: 'white',
-							fontWeight: 700,
-							fontSize: '1.5rem',
-							border: 'none',
-							boxShadow: '0 0 12px 2px #4a4e6955',
-							cursor: 'pointer',
-							display: 'flex',
-							alignItems: 'center',
-							justifyContent: 'center',
-							zIndex: 10001,
-							padding: 0,
-						}}
 						aria-label="Close"
 					>
-						&#10005;
+						<span className="close-x">×</span>
 					</Button>
-					{/* Tabs: absolutely positioned just above top-left of modal, touching it */}
-					<div
-						style={{
-							position: 'absolute',
-							top: '-3.2rem', // overlap modal by 0.2rem (tab height ~2rem + padding)
-							left: '2.5rem', // align with modal padding
-							display: 'flex',
-							gap: '0.5rem',
-							background: '#18181b',
-							borderTopLeftRadius: '1.5rem',
-							borderTopRightRadius: '1.5rem',
-							boxShadow: '0 4px 16px 0 #0004',
-							padding: '0.15rem 0.4rem 0 0.4rem',
-							zIndex: 10002,
-						}}
-					>
-						<button
-							style={{
-								background: tab === 'info' ? 'linear-gradient(90deg, #ffe680 0%, #ffa751 100%)' : 'transparent',
-								color: tab === 'info' ? '#22223b' : '#ffe680',
-								fontWeight: 700,
-								fontSize: '1.1rem',
-								borderRadius: '1.5rem 1.5rem 0 0',
-								border: 'none',
-								padding: '0.7rem 2.2rem',
-								cursor: 'pointer',
-								boxShadow: tab === 'info' ? '0 0 8px 2px #ffe68055' : 'none',
-								outline: tab === 'info' ? '2px solid #ffe680' : 'none',
-								transition: 'background 0.2s, color 0.2s',
-								borderBottom: tab === 'info' ? '4px solid #ffa751' : '4px solid transparent',
-								marginBottom: '2px',
-							}}
-							onClick={() => setTab('info')}
-							aria-label="Planet Info Tab"
-						>
-							🪐 Info
-						</button>
-						<button
-							style={{
-								background: tab === 'surface' ? 'linear-gradient(90deg, #7f00ff 0%, #3a3aff 100%)' : 'transparent',
-								color: tab === 'surface' ? '#fff' : '#7f00ff',
-								fontWeight: 700,
-								fontSize: '1.1rem',
-								borderRadius: '1.5rem 1.5rem 0 0',
-								border: 'none',
-								padding: '0.7rem 2.2rem',
-								cursor: 'pointer',
-								boxShadow: tab === 'surface' ? '0 0 8px 2px #7f00ff55' : 'none',
-								outline: tab === 'surface' ? '2px solid #7f00ff' : 'none',
-								transition: 'background 0.2s, color 0.2s',
-								borderBottom: tab === 'surface' ? '4px solid #3a3aff' : '4px solid transparent',
-								marginBottom: '2px',
-							}}
-							onClick={() => setTab('surface')}
-							aria-label="Surface View Tab"
-						>
-							🏜️ Surface
-						</button>
-					</div>
-					{/* Navigation arrows OUTSIDE modal, styled like zoom buttons */}
-					{filteredIdx > 0 && (
-						<div style={{
-							position: 'absolute',
-							top: '50%',
-							left: '-3.7rem',
-							transform: 'translateY(-50%)',
-							zIndex: 10003,
-							display: 'flex',
-							flexDirection: 'column',
-							gap: '1.5rem',
-							pointerEvents: 'auto',
-						}}>
-							<Button
-								className="font-bold rounded-full shadow-lg flex items-center justify-center group"
-								style={{
-									background: 'linear-gradient(90deg, rgb(34, 34, 59) 0%, rgb(74, 78, 105) 100%)',
-									color: 'white',
-									fontSize: '2rem',
-									fontWeight: 600,
-									width: '2.5rem',
-									height: '2.5rem',
-									lineHeight: 1,
-									padding: 0,
-									display: 'flex',
-									alignItems: 'center',
-									justifyContent: 'center',
-									border: 'none',
-									boxShadow: '0 0 12px 2px #3a3aff55',
-									cursor: 'pointer',
-									position: 'relative',
-									overflow: 'visible',
-									opacity: 1,
-									outline: 'none',
-									transition: 'background 0.2s, color 0.2s',
-								}}
-								aria-label="Previous planet"
-								onClick={e => { e.stopPropagation(); onPrevPlanet(filteredIdx - 1, filteredPlanets); }}
-							>
-								<span style={{ display: 'block', width: '100%', textAlign: 'center', zIndex: 2, position: 'relative' }}>{'<'}</span>
-								<span
-									className="zoom-ring"
-									style={{
-										position: 'absolute',
-										top: '50%',
-										left: '50%',
-										transform: 'translate(-50%, -50%)',
-										width: '100%',
-										height: '100%',
-										borderRadius: '50%',
-										border: '3px solid #ffe680',
-										opacity: 0,
-										transition: 'opacity 0.2s',
-										pointerEvents: 'none',
-									}}
-								/>
-								<style>{`.group:hover .zoom-ring { opacity: 1 !important; }`}</style>
-							</Button>
-						</div>
-					)}
-					{filteredIdx < filteredPlanets.length - 1 && (
-						<div style={{
-							position: 'absolute',
-							top: '50%',
-							right: '-3.7rem',
-							transform: 'translateY(-50%)',
-							zIndex: 10003,
-							display: 'flex',
-							flexDirection: 'column',
-							gap: '1.5rem',
-							pointerEvents: 'auto',
-						}}>
-							<Button
-								className="font-bold rounded-full shadow-lg flex items-center justify-center group"
-								style={{
-									background: 'linear-gradient(90deg, rgb(34, 34, 59) 0%, rgb(74, 78, 105) 100%)',
-									color: 'white',
-									fontSize: '2rem',
-									fontWeight: 600,
-									width: '2.5rem',
-									height: '2.5rem',
-									lineHeight: 1,
-									padding: 0,
-									display: 'flex',
-									alignItems: 'center',
-									justifyContent: 'center',
-									border: 'none',
-									boxShadow: '0 0 12px 2px #3a3aff55',
-									cursor: 'pointer',
-									position: 'relative',
-									overflow: 'visible',
-									opacity: 1,
-									outline: 'none',
-									transition: 'background 0.2s, color 0.2s',
-								}}
-								aria-label="Next planet"
-								onClick={e => { e.stopPropagation(); onNextPlanet(filteredIdx + 1, filteredPlanets); }}
-							>
-								<span style={{ display: 'block', width: '100%', textAlign: 'center', zIndex: 2, position: 'relative' }}>{'>'}</span>
-								<span
-									className="zoom-ring"
-									style={{
-										position: 'absolute',
-										top: '50%',
-										left: '50%',
-										transform: 'translate(-50%, -50%)',
-										width: '100%',
-										height: '100%',
-										borderRadius: '50%',
-										border: '3px solid #ffe680',
-										opacity: 0,
-										transition: 'opacity 0.2s',
-										pointerEvents: 'none',
-									}}
-								/>
-								<style>{`.group:hover .zoom-ring { opacity: 1 !important; }`}</style>
-							</Button>
-						</div>
-					)}
-					{/* Left: Name, Content below */}
-					<div style={{ flex: '0 0 320px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start', minHeight: 420 }}>
-						<h2 style={{ color: '#ffe680', fontSize: '2.1rem', fontWeight: 700, marginBottom: '0.8rem', textAlign: 'center' }}>
-							{planet.name}
+					
+					<PlanetModalTabs setTab={setTab} tab={tab} />
+					
+					{/* Right navigation arrow */}
+					<PlanetModalRightNavigation 
+					 	planet={planet}
+						sun={sun}
+						filteredIdx={filteredIdx}
+						filteredPlanets={filteredPlanets}
+						getImageSrc={getImageSrc}
+						onNextPlanet={onNextPlanet}
+						planets
+					/>
+					
+					<PlanetModalLeftNavigation
+						planet={planet}
+						planets={planets}
+						sun={sun}
+						filteredIdx={filteredIdx}
+						filteredPlanets={filteredPlanets}
+						getImageSrc={getImageSrc}
+						onPrevPlanet={onPrevPlanet}
+						setSelectedPlanet={setSelectedPlanet}
+					/>
+					
+					{tab !== 'moons' ? (
+						<>
+							<div className={(planet.name === 'Pluto' ? 'pluto-modal-content-left ' : '') + ''} style={{ flex: '0 0 320px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start', minHeight: 420 }}>
+
+								<h2 style={{ color: '#ffe680', fontSize: '2.1rem', fontWeight: 700, textAlign: 'center' }}>
+									{planet.name}
+								</h2>
+								
+								
+								{/* Tab content, fixed min height to avoid modal resize */}
+								{(() => {
+									let leftTabContent = null;
+									if (tab === 'info') {
+										leftTabContent = (
+											<PlanetInfoLeft
+												planet={planet}
+												setShowPlanetInfoLightbox={setShowPlanetInfoLightbox}
+												isReading={isReading}
+												handleSpeak={handleSpeak}
+												showPlanetInfoLightbox={showPlanetInfoLightbox}
+												getImageSrc={getImageSrc}
+											/>
+										);
+									} else if (tab === 'surface') {
+										leftTabContent = (
+											<PlanetSurfaceLeft
+												planet={planet}
+												getImageSrc={getImageSrc}
+												setShowSurfaceLightbox={setShowSurfaceLightbox}
+												showSurfaceLightbox={showSurfaceLightbox}
+												isReading={isReading}
+												handleSpeak={handleSpeak}
+											/>
+										);
+									} else if (tab === 'moons') {
+										leftTabContent = (
+											<PlanetInfoLeft 
+												planet={planet} 
+												selectedMoonIdx={selectedMoonIdx} 
+												setSelectedMoonIdx={setSelectedMoonIdx} 
+											/>
+										);
+									}
+									return (
+										<div style={{ minHeight: 340, width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+											{leftTabContent}
+										</div>
+									);
+								})()}
+							</div>
+							{/* Right: Info and explorers */}
+							<div style={{ flex: '1 1 0', minWidth: 0, position: 'relative', minHeight: 420 }}>
+								{/* Show explorer flying around the modal if any explorer matches this planet */}
+								{explorers.map((explorer, i) => {
+									const rotations = getPathRotations(explorer.path);
+									return (
+										<motion.img
+											key={explorer.name}
+											src={explorer.img}
+											alt={explorer.name}
+											style={{
+												position: 'absolute',
+												left: '50%',
+												top: '0%',
+												width: 64,
+												height: 64,
+												marginLeft: -32,
+												marginTop: -32,
+												zIndex: 9999,
+												cursor: 'pointer',
+												pointerEvents: 'auto',
+												border: hoveredPlanet === explorer.name ? '2px solid #fefcbf' : '2px solid transparent',
+												boxShadow: hoveredPlanet === explorer.name ? '0 2px 8px 0 #0008' : '0 2px 8px 0 transparent',
+												borderRadius: '50%',
+												background:  hoveredPlanet === explorer.name ? '#22223b' : 'transparent',
+												transition: 'box-shadow 0.2s, border-color 0.2s, cursor 0.2s',
+											}}
+											animate={{
+												x: explorer.path.map(p => p.x),
+												y: explorer.path.map(p => p.y),
+												rotate: rotations,
+											}}
+											transition={{
+												duration: 12,
+												repeat: Infinity,
+												ease: "easeInOut",
+											}}
+											onClick={() => setShowExplorerInfo(spaceExplorers.findIndex(e => e.name === explorer.name))}
+											onMouseEnter={() => setHoveredPlanet(explorer.name)}
+											onMouseLeave={() => setHoveredPlanet(null)}
+										/>
+									);
+								})}
+								
+								
+								{(() => {
+									let rightTabContent = null;
+									if (tab === 'info') {
+										rightTabContent = (
+											<PlanetInfoRight
+												planet={planet}
+												isReading={isReading}
+												handleSpeak={handleSpeak}
+											/>
+										);
+									} else if (tab === 'surface') {
+										rightTabContent = (
+											<PlanetSurfaceRight
+												planet={planet}
+												isReading={isReading}
+												handleSpeak={handleSpeak}
+											/>
+										);
+									} else if (tab === 'moons') {
+										rightTabContent = (
+											<PlanetInfoLeft 
+												planet={planet} 
+												selectedMoonIdx={selectedMoonIdx} 
+												setSelectedMoonIdx={setSelectedMoonIdx} 
+											/>
+										);
+									}
+									return rightTabContent;
+								})()}
+							</div>
+						</>
+					) : null }
+					
+					{ tab === 'moons' ? (
+						<>
+						<h2 style={{ color: '#ffe680', fontSize: '2.1rem', fontWeight: 700, textAlign: 'center' }}>
+							{planet.moonsTitle}
 						</h2>
-						{/* Tab content, fixed min height to avoid modal resize */}
-						<div style={{ minHeight: 340, width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-							{tab === 'info' ? (
-								<>
-									<img
-										src={getImageSrc(planet.img)}
-										alt={planet.name}
-										style={{
-											width: '220px',
-											height: '220px',
-											objectFit: 'contain',
-											display: 'block',
-											marginBottom: '0.8rem',
-											cursor: 'zoom-in',
-											borderRadius: '1rem',
-											background: '#23223b',
-											border: '3px solid #ffe680',
-											boxShadow: '0 0 16px 4px #ffe68055',
-											padding: '0.5rem',
-										}}
-										onClick={() => setShowSurfaceLightbox(true)}
-										tabIndex={0}
-										aria-label={`Show large view of ${planet.name}`}
-									/>
-									<p style={{ color: '#fff', fontSize: '1.1rem', marginBottom: '1.5rem', textAlign: 'center' }}>
-										{planet.description}
-									</p>
-									{showSurfaceLightbox && (
-										<div
-											role="dialog"
-											aria-modal="true"
-											onClick={e => { if (e.target === e.currentTarget) setShowSurfaceLightbox(false); }}
-											style={{
-												position: 'fixed',
-												top: 0,
-												left: 0,
-												width: '100vw',
-												height: '100vh',
-												background: 'rgba(0,0,0,0.92)',
-												zIndex: 20000,
-												display: 'flex',
-												alignItems: 'center',
-												justifyContent: 'center',
-												cursor: 'zoom-out',
-											}}
-										>
-											<img
-												src={getImageSrc(planet.img)}
-												alt={planet.name + ' large'}
-												style={{
-													maxWidth: '90vw',
-													maxHeight: '90vh',
-													borderRadius: '2rem',
-													boxShadow: '0 0 32px 8px #ffe680cc',
-													background: '#23223b',
-													border: '5px solid #ffe680',
-												}}
-											/>
-											<button
-												style={{
-													position: 'absolute',
-													top: 24,
-													right: 36,
-													color: '#fff',
-													background: 'rgba(0,0,0,0.5)',
-													border: 'none',
-													borderRadius: '50%',
-													fontSize: '2.5rem',
-													fontWeight: 900,
-													cursor: 'pointer',
-													zIndex: 20001,
-													width: 48,
-													height: 48,
-													display: 'flex',
-													alignItems: 'center',
-													justifyContent: 'center',
-												}}
-												aria-label="Close large planet view"
-												onClick={e => { e.stopPropagation(); setShowSurfaceLightbox(false); }}
-											>
-												&#10005;
-											</button>
-										</div>
-									)}
-								</>
-							) : (
-								<>
-									<img
-										src={getImageSrc(planet.surfaceImg)}
-										alt={planet.name + ' surface'}
-										style={{
-											width: '320px',
-											height: '320px',
-											objectFit: 'contain',
-											display: 'block',
-											marginBottom: '0.8rem',
-											borderRadius: '1rem',
-											background: '#23223b',
-											border: '3px solid #7f00ff',
-											boxShadow: '0 0 16px 4px #7f00ff55',
-											padding: '0.5rem',
-											cursor: 'zoom-in',
-										}}
-										onClick={() => setShowSurfaceLightbox(true)}
-										tabIndex={0}
-										aria-label={`Show large surface view of ${planet.name}`}
-									/>
-									<p style={{ color: '#7f00ff', fontWeight: 600, fontSize: '1.1rem', textAlign: 'center', marginBottom: '1.5rem' }}>
-										{planet.name} surface view
-									</p>
-									{showSurfaceLightbox && (
-										<div
-											role="dialog"
-											aria-modal="true"
-											onClick={e => { if (e.target === e.currentTarget) setShowSurfaceLightbox(false); }}
-											style={{
-												position: 'fixed',
-												top: 0,
-												left: 0,
-												width: '100vw',
-												height: '100vh',
-												background: 'rgba(0,0,0,0.92)',
-												zIndex: 20000,
-												display: 'flex',
-												alignItems: 'center',
-												justifyContent: 'center',
-												cursor: 'zoom-out',
-											}}
-										>
-											<img
-												src={getImageSrc(planet.surfaceImg)}
-												alt={planet.name + ' surface large'}
-												style={{
-													maxWidth: '90vw',
-													maxHeight: '90vh',
-													borderRadius: '2rem',
-													boxShadow: '0 0 32px 8px #7f00ffcc',
-													background: '#23223b',
-													border: '5px solid #7f00ff',
-												}}
-											/>
-											<button
-												style={{
-													position: 'absolute',
-													top: 24,
-													right: 36,
-													color: '#fff',
-													background: 'rgba(0,0,0,0.5)',
-													border: 'none',
-													borderRadius: '50%',
-													fontSize: '2.5rem',
-													fontWeight: 900,
-													cursor: 'pointer',
-													zIndex: 20001,
-													width: 48,
-													height: 48,
-													display: 'flex',
-													alignItems: 'center',
-													justifyContent: 'center',
-												}}
-												aria-label="Close large surface view"
-												onClick={e => { e.stopPropagation(); setShowSurfaceLightbox(false); }}
-											>
-												&#10005;
-											</button>
-										</div>
-									)}
-								</>
-							)}
+						<div 
+							id="moons-container"
+							style={{
+								width: '100%',
+								minHeight: 340,
+								display: 'flex',
+								flexDirection: 'column',
+								alignItems: 'center',
+								justifyContent: 'center',
+								borderRadius: '1rem',
+								padding: '1.5rem 0',
+								marginBottom: '1.5rem',
+							}}
+						>
+							<Moons planet={planet} selectedMoonIdx={selectedMoonIdx} setSelectedMoonIdx={setSelectedMoonIdx} />
 						</div>
-					</div>
-					{/* Right: Info and explorers */}
-					<div style={{ flex: '1 1 0', minWidth: 0, position: 'relative', minHeight: 420 }}>
-						{/* Show explorer flying around the modal if any explorer matches this planet */}
-						{explorers.map((explorer, i) => {
-							const rotations = getPathRotations(explorer.path);
-							return (
-								<motion.img
-									key={explorer.name}
-									src={explorer.img}
-									alt={explorer.name}
-									style={{
-										position: 'absolute',
-										left: '50%',
-										top: '0%',
-										width: 64,
-										height: 64,
-										marginLeft: -32,
-										marginTop: -32,
-										zIndex: 9999,
-										cursor: 'pointer',
-										pointerEvents: 'auto',
-										border: hoveredPlanet === explorer.name ? '2px solid #fefcbf' : '2px solid transparent',
-										boxShadow: hoveredPlanet === explorer.name ? '0 2px 8px 0 #0008' : '0 2px 8px 0 transparent',
-										borderRadius: '50%',
-										background:  hoveredPlanet === explorer.name ? '#22223b' : 'transparent',
-										transition: 'box-shadow 0.2s, border-color 0.2s, cursor 0.2s',
-									}}
-									animate={{
-										x: explorer.path.map(p => p.x),
-										y: explorer.path.map(p => p.y),
-										rotate: rotations,
-									}}
-									transition={{
-										duration: 12,
-										repeat: Infinity,
-										ease: "easeInOut",
-									}}
-									onClick={() => setShowExplorerInfo(spaceExplorers.findIndex(e => e.name === explorer.name))}
-									onMouseEnter={() => setHoveredPlanet(explorer.name)}
-									onMouseLeave={() => setHoveredPlanet(null)}
-								/>
-							);
-						})}
-						
-						
-						{tab === 'info' ? (
-							<>
-								<p style={{ color: '#ffe680', fontSize: '1.1rem', marginBottom: 0, textAlign: 'center' }}>
-									{planet.name !== "Sun"
-										? `Distance from Sun: ${planet.distanceFromSun.toLocaleString()} million km`
-										: planet.size
-											? `Size: ${planet.size}`
-											: ''}
-								</p>
-								{planet.size && (
-									<p style={{ color: '#4ade80', fontSize: '1.1rem', marginBottom: '0.75rem' }}>
-										Size: {planet.size}
-									</p>
-								)}
-								{planet.mass && (
-									<p style={{ color: '#4ade80', fontSize: '1.1rem', marginBottom: '0.75rem' }}>
-										Mass: {planet.mass}
-									</p>
-								)}
-								{planet.yearLength && (
-									<p style={{ color: '#fff', fontSize: '1.1rem', marginBottom: '0.75rem' }}>
-										Year Length: {planet.yearLength}
-									</p>
-								)}
-								{planet.dayLength && (
-									<p style={{ color: '#fff', fontSize: '1.1rem', marginBottom: '1.5rem' }}>
-										Day Length: {planet.dayLength}
-									</p>
-								)}
-								<div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-start' }}>
-									<Button
-										style={{
-											background: isReading
-												? 'linear-gradient(90deg, #7f00ff 0%, #3a3aff 100%)'
-												: 'linear-gradient(90deg, #3a3aff 0%, #7f00ff 100%)',
-											color: 'white',
-											fontWeight: 600,
-											fontSize: '1.1rem',
-											padding: '0.75rem 1.5rem',
-											borderRadius: '9999px',
-											cursor: 'pointer',
-											border: 'none',
-											boxShadow: '0 0 12px 2px #3a3aff55',
-											opacity: 1,
-											transition: 'background 0.2s, opacity 0.2s',
-										}}
-										onClick={() => handleSpeak(planet.description)}
-									>
-										{isReading ? '⏹️ Stop Reading' : '🔊 Read Aloud'}
-									</Button>
-								</div>
-							</>
-						) : (
-							<>
-								<h3 style={{ color: '#ffe680', fontWeight: 700, fontSize: '1.35rem', marginBottom: '0.7rem', textAlign: 'left', letterSpacing: '0.01em' }}>
-									{planet.surfaceTitle}
-								</h3>
-								<p style={{ color: '#fff', fontWeight: 500, fontSize: '1.1rem', marginBottom: '1.2rem', textAlign: 'left' }}>
-									{planet.surfaceDetails}
-								</p>
-								<div style={{ display: 'flex', justifyContent: 'center', gap: '1.2rem', marginBottom: '1.5rem' }}>
-									{planet.tempCool && (
-										<span style={{ color: '#60a5fa', fontWeight: 600, fontSize: '1.05rem' }}>Coolest: {planet.tempCool}</span>
-									)}
-									{planet.tempHot && (
-										<span style={{ color: '#f87171', fontWeight: 600, fontSize: '1.05rem' }}>Hottest: {planet.tempHot}</span>
-									)}
-								</div>
-								<div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-start' }}>
-									<Button
-										style={{
-											background: isReading
-												? 'linear-gradient(90deg, #7f00ff 0%, #3a3aff 100%)'
-												: 'linear-gradient(90deg, #3a3aff 0%, #7f00ff 100%)',
-											color: 'white',
-											fontWeight: 600,
-											fontSize: '1.1rem',
-											padding: '0.75rem 1.5rem',
-											borderRadius: '9999px',
-											cursor: 'pointer',
-											border: 'none',
-											boxShadow: '0 0 12px 2px #3a3aff55',
-											opacity: 1,
-											transition: 'background 0.2s, opacity 0.2s',
-										}}
-										onClick={() => handleSpeak(planet.surfaceDetails)}
-									>
-										{isReading ? '⏹️ Stop Reading' : '🔊 Read Aloud'}
-									</Button>
-								</div>
-							</>
-						)}
-					</div>
+						</>
+					) :  null }
+					
 				</motion.div>
 			</div>
 		</>
