@@ -96,7 +96,7 @@ export default function SolarSystemHome() {
 			},
 		]);
 		
-		if (typeof playLazerSound === 'function') playLazerSound(); // Play lazer sound on shooting star click
+		if (typeof playLazerSound === 'function') playLazerSound(); 
 	};
 
 	// Remove shuttlePath and shuttleRotations, use explorer.path and getPathRotations instead

@@ -1,7 +1,8 @@
 import React from "react";
 import "./ReadAloudButton.css";
 
-export default function ReadAloudButton({ isReading, onClick, labelStart, labelStop, hoverSoundHandlers }) {
+// Accept ...rest to forward all extra props to the button
+export default function ReadAloudButton({ isReading, onClick, labelStart, labelStop, hoverSoundHandlers, ...rest }) {
   return (
     <button
       type="button"
@@ -11,6 +12,7 @@ export default function ReadAloudButton({ isReading, onClick, labelStart, labelS
       onClick={onClick}
       aria-pressed={isReading}
       {...hoverSoundHandlers}
+      {...rest}
     >
       <span className="read-aloud-icon" aria-hidden="true">
         {/* Speaker icon */}

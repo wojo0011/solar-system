@@ -5,7 +5,7 @@ import LanguageSwitcher from "./LanguageSwitcher";
 import ReadAloudButton from "./ReadAloudButton";
 import TooltipParent from "./TooltipParent";
 import AnimatedMessage from "./AnimatedMessage";
-import useHoverSound from "../hooks/useHoverSound";
+import useSound from "../hooks/useSound";
 import "./StartExploringScreen.css";
 import startExploringDataRaw from "../data/startExploring.json";
 import languages from "../data/languages.json";
@@ -26,9 +26,8 @@ export default function StartExploringScreen({ onStart, currentLanguage, setCurr
   const tooltips = (spaceExploration[currentLanguage]?.tooltips) || spaceExploration.en.tooltips;
 
   // Hover sound handlers
-  const hoverSoundHandlersRaw = useHoverSound();
-  const hoverSoundHandlers = !isReading ? hoverSoundHandlersRaw : { onMouseEnter: undefined, onFocus: undefined };
-
+  const { play: playHoverSound } = useSound("/hover.wav", 1);
+  
   // Advance to next message
   const nextMessage = useCallback(() => {
     setMsgIndex(i => (i + 1) % messages.length);
@@ -177,14 +176,16 @@ export default function StartExploringScreen({ onStart, currentLanguage, setCurr
           labelStart={langData.readAloud.start}
           labelStop={langData.readAloud.stop}
           tooltip={tooltips.readAloud}
-          hoverSoundHandlers={hoverSoundHandlers}
+          onMouseEnter={() => !isReading && playHoverSound()}
+          onFocus={() => !isReading && playHoverSound()}
         />
       </TooltipParent>
       <TooltipParent tooltip={tooltips.exploreButton} className="centered">
         <Button
           className="start-exploring-screen-explore-btn"
           onClick={handleStartWithAnimation}
-          {...hoverSoundHandlers}
+          onMouseEnter={() => !isReading && playHoverSound()}
+          onFocus={() => !isReading && playHoverSound()}
         >
           <img
             src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36'><text x='0' y='32' font-size='32'>🚀</text></svg>"
