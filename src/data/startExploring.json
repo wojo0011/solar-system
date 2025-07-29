@@ -10,8 +10,8 @@
       "Are you ready to blast off and explore? Let's go!"
     ],
     "readAloud": {
-      "start": "🔊 Read Aloud",
-      "stop": "⏹️ Stop Reading"
+      "start": "Read Aloud",
+      "stop": "Stop Reading"
     },
     "exploreButton": "Start Exploring!"
   },
@@ -25,8 +25,8 @@
       "Prêt à décoller et explorer? Allons-y!"
     ],
     "readAloud": {
-      "start": "🔊 Lire à haute voix",
-      "stop": "⏹️ Arrêter la lecture"
+      "start": "Lire à haute voix",
+      "stop": "Arrêter la lecture"
     },
     "exploreButton": "Commencer l'exploration!"
   },
@@ -40,8 +40,8 @@
       "Gotowy na start i odkrywanie? Ruszamy!"
     ],
     "readAloud": {
-      "start": "🔊 Czytaj na głos",
-      "stop": "⏹️ Zatrzymaj czytanie"
+      "start": "Czytaj na głos",
+      "stop": "Zatrzymaj czytanie"
     },
     "exploreButton": "Zacznij odkrywać!"
   },
@@ -55,8 +55,8 @@
       "Andam na ba ka mo-explore? Tara, larga ta!"
     ],
     "readAloud": {
-      "start": "🔊 Basa Pahinungod",
-      "stop": "⏹️ Hunong Basa"
+      "start": "Basa Pahinungod",
+      "stop": "Hunong Basa"
     },
     "exploreButton": "Sugdi ang Pag-ila!"
   }

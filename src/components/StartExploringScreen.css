@@ -22,22 +22,67 @@
   z-index: 10;
   line-height: 1.1;
   transition: font-size 0.5s cubic-bezier(.4,1.4,.6,1), margin-bottom 0.5s cubic-bezier(.4,1.4,.6,1);
+  /* Subtle glow and shimmer */
+  text-shadow: 0 2px 8px #ffe25988, 0 0 12px #ffa75155;
+  background: linear-gradient(90deg, #ffe259 10%, #ffa751 30%, #7f00ff 60%, #3a3aff 80%, #ffe259 100%);
+  background-size: 300% 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: unset;
+  
+ animation: title-gradient-move 3.5s linear infinite, title-bounce 6.4s cubic-bezier(.4,1.4,.6,1) infinite;}
+
+.start-exploring-screen-title img, .start-exploring-screen-title svg, .start-exploring-screen-title .emoji {
+  
+  background: none !important;
+  -webkit-background-clip: unset !important;
+  background-clip: unset !important;
+  color: #ffeb3b;
+  filter: none !important;
 }
 
-.start-exploring-screen-animated-message {
-  color: #ffe680;
-  font-size: clamp(1.1rem, 3vw, 1.5rem);
-  max-width: 90vw;
-  width: 100%;
-  text-align: center;
-  line-height: 1.6;
-  font-weight: 500;
-  letter-spacing: 0.1px;
-  min-height: 60px;
-  transition: opacity 0.7s, font-size 0.5s cubic-bezier(.4,1.4,.6,1), margin-bottom 0.5s cubic-bezier(.4,1.4,.6,1), min-height 0.5s cubic-bezier(.4,1.4,.6,1);
-  opacity: 1;
-  animation: fadeIn 0.7s;
-  box-sizing: border-box;
+@keyframes title-gradient-move {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes title-bounce {
+  0% {
+    transform: translateY(0) scale(1.04);
+    filter: brightness(1.1);
+  }
+  1.5% {
+    transform: translateY(-6px) scale(1.08);
+    filter: brightness(1.2);
+  }
+  3.5% {
+    transform: translateY(-12px) scale(1.12);
+    filter: brightness(1.3);
+  }
+  6% {
+    transform: translateY(-6px) scale(1.08);
+    filter: brightness(1.2);
+  }
+  9% {
+    transform: translateY(0) scale(1.04);
+    filter: brightness(1.1);
+  }
+  11% {
+    transform: translateY(-3px) scale(1.06);
+    filter: brightness(1.15);
+  }
+  14% {
+    transform: translateY(0) scale(1.04);
+    filter: brightness(1.1);
+  }
+  100% {
+    transform: translateY(0) scale(1.04);
+    filter: brightness(1.1);
+  }
 }
 
 .start-exploring-screen-explore-btn {
@@ -158,8 +203,6 @@
   font-weight: 500;
   user-select: none;
 }
-
-
 
 /* Responsive tweaks */
 @media (max-width: 600px) {

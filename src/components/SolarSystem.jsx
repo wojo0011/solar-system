@@ -9,6 +9,7 @@ import planets from "../data/planets.json";
 import spaceExplorers from "../data/spaceExplorers.json";
 import StartExploringScreen from "./StartExploringScreen";
 import WishMeter from "./WishMeter";
+import useSound from "../hooks/useSound";
 
 export default function SolarSystemHome() {
 	const [selectedPlanet, setSelectedPlanet] = useState(null);
@@ -22,10 +23,9 @@ export default function SolarSystemHome() {
 	const [hoveredPlanet, setHoveredPlanet] = useState(null);
 	const [zoom, setZoom] = useState(1);
 	const [showExplorerInfo, setShowExplorerInfo] = useState(null); // replaces showShuttleInfo
-	const audioRef = useRef(null);
-	const clickSoundRef = useRef(null);
-	const sparkleSoundRef = useRef(null);
-	const hitSoundRef = useRef(null);
+
+	// Sounds
+	const { play: playLazerSound } = useSound("/lazer.wav", 1);
 	const [currentLanguage, setCurrentLanguage] = useState('en'); // default to English, can be set from StartExploringScreen
 	
 	// Place these hooks at the top level for all explorers
@@ -34,33 +34,6 @@ export default function SolarSystemHome() {
 	const [explorerDummy, setExplorerDummy] = useState(0); // force re-render for explorer animation
 	const explorerPausedProgress = useRef({}); // store paused progress on hover
 	const [hoveredStar, setHoveredStar] = useState(null); // <-- add this at the top-level, outside the map
-
-	useEffect(() => {
-		audioRef.current = new Audio("/background-music.mp3");
-		audioRef.current.loop = true;
-		audioRef.current.onerror = () => {
-			console.warn("Background music file not found or cannot be played.");
-			audioRef.current = null;
-		};
-		clickSoundRef.current = new Audio("/click-sound.mp3");
-		clickSoundRef.current.onerror = () => {
-			console.warn("Click sound file not found or cannot be played.");
-			clickSoundRef.current = null;
-		};
-		sparkleSoundRef.current = new Audio("/sparkle-sound.mp3");
-		sparkleSoundRef.current.onerror = () => {
-			console.warn("Sparkle sound file not found or cannot be played.");
-			sparkleSoundRef.current = null;
-		};
-		hitSoundRef.current = new Audio("/Hit7.wav");
-		hitSoundRef.current.onerror = () => {
-			console.warn("Hit sound file not found or cannot be played.");
-			hitSoundRef.current = null;
-		};
-		return () => {
-			if (audioRef.current) audioRef.current.pause();
-		};
-	}, []);
 
 	useEffect(() => {
 		const generatedStars = Array.from({ length: 200 }).map(() => ({
@@ -93,31 +66,6 @@ export default function SolarSystemHome() {
 		return () => clearInterval(interval);
 	}, []);
 
-	const startMusic = () => {
-		if (audioRef.current) audioRef.current.play();
-	};
-
-	const playClickSound = () => {
-		if (clickSoundRef.current) {
-			clickSoundRef.current.currentTime = 0;
-			clickSoundRef.current.play();
-		}
-	};
-
-	const playSparkleSound = () => {
-		if (sparkleSoundRef.current) {
-			sparkleSoundRef.current.currentTime = 0;
-			sparkleSoundRef.current.play();
-		}
-	};
-
-	const playHitSound = () => {
-		if (hitSoundRef.current) {
-			hitSoundRef.current.currentTime = 0;
-			hitSoundRef.current.play();
-		}
-	};
-
 	const speak = (text) => {
 		const utterance = new SpeechSynthesisUtterance(text);
 		speechSynthesis.speak(utterance);
@@ -147,8 +95,8 @@ export default function SolarSystemHome() {
 				left: (adjustedX / window.innerWidth) * 100,
 			},
 		]);
-		playSparkleSound();
-		playHitSound();
+		
+		if (typeof playLazerSound === 'function') playLazerSound(); // Play lazer sound on shooting star click
 	};
 
 	// Remove shuttlePath and shuttleRotations, use explorer.path and getPathRotations instead
@@ -651,7 +599,6 @@ export default function SolarSystemHome() {
 								className="w-32 h-32 md:w-40 md:h-40 drop-shadow-2xl animate-pulse absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20"
 								style={{ pointerEvents: 'auto', cursor: 'pointer' }}
 								onClick={() => {
-									playClickSound();
 									setSelectedPlanet({
 										name: 'Sun',
 										img: 'images/sun.png',
@@ -749,7 +696,6 @@ export default function SolarSystemHome() {
 														setHoveredPlanet(null);
 													}}
 													onClick={() => {
-														playClickSound();
 														openPlanetModal(i);
 													}}
 												/>
@@ -799,7 +745,6 @@ export default function SolarSystemHome() {
 				<StartExploringScreen
 					onStart={() => {
 						setExploreMode(true);
-						startMusic();
 					}}
 					setCurrentLanguage={setCurrentLanguage}
 					currentLanguage={currentLanguage}

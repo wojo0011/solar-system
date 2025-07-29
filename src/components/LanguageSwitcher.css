@@ -1,6 +1,6 @@
 .language-switcher {
   position: fixed;
-  top: 1.5rem;
+  top: 4.5rem;
   right: 2rem;
   display: flex;
   gap: 0.5rem;
@@ -31,7 +31,7 @@
 }
 .language-switcher-modal-wrapper {
   position: fixed;
-  top: 1.5rem;
+  top: 4.5rem; /* Match the .language-switcher top spacing */
   right: 2rem;
   z-index: 110;
 }
@@ -70,7 +70,7 @@
   background: #18181b;
   box-shadow: 0 8px 32px #000a;
   border-radius: 1.5em;
-  margin: 2.5rem 2rem 0 0;
+  margin: 4.5rem 2rem 0 0;
   padding: 2em 2em 1.5em 2em;
   min-width: 260px;
   position: relative;

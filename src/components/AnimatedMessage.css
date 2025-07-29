@@ -1,0 +1,38 @@
+.start-exploring-screen-animated-message {
+  color: #ffe680;
+  font-size: clamp(1.1rem, 3vw, 1.5rem);
+  max-width: 90vw;
+  width: 100%;
+  text-align: center;
+  line-height: 1.6;
+  font-weight: 500;
+  letter-spacing: 0.1px;
+  min-height: 60px;
+  transition: opacity 0.7s, font-size 0.5s cubic-bezier(.4,1.4,.6,1), margin-bottom 0.5s cubic-bezier(.4,1.4,.6,1), min-height 0.5s cubic-bezier(.4,1.4,.6,1);
+  opacity: 1;
+  animation: fadeIn 0.7s;
+  box-sizing: border-box;
+  transition: opacity 0.7s;
+}
+
+.start-exploring-screen-animated-message.fade-out {
+  opacity: 0;
+  transition: opacity 1.2s;
+}
+
+.typing-underscore {
+  display: inline-block;
+  margin-left: 2px;
+  color: #ffe680;
+  opacity: 1;
+  animation: blink-underscore 0.9s steps(1) infinite;
+  transition: opacity 0.4s;
+}
+.typing-underscore.fade-out {
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+@keyframes blink-underscore {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}

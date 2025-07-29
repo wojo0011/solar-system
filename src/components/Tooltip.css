@@ -43,7 +43,20 @@
 }
 
 .tooltip-parent.language-switcher {
+  position: relative;
+  width: fit-content;
+  display: block;
+  top: -117px !important;
+  left: 45.6% !important;
   margin-bottom: 1.2em;
+}
+
+/* Tooltip for language switcher: always appear below the switcher */
+.tooltip-parent.language-switcher .tooltip {
+  transform: translateX(-50%) scale(0.95);
+  min-width: max-content;
+  white-space: nowrap;
+  margin-top: 0.2em;
 }
 
 .tooltip-parent.centered {

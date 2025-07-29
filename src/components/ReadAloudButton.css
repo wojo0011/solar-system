@@ -1,4 +1,3 @@
-
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
@@ -40,4 +39,131 @@
 
 .reading {
   background: linear-gradient(90deg, #7f00ff 0%, #3a3aff 100%);
+}
+
+.read-aloud-icon {
+  display: inline-block;
+  margin-right: 0.7em;
+  vertical-align: middle;
+  transition: color 0.2s;
+  position: relative;
+  width: 1.7em;
+  height: 1.7em;
+}
+
+.speaker-icon, .equalizer-icon {
+  position: absolute;
+  left: 0; top: 0;
+  width: 100%; height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transform: scale(0.85);
+  pointer-events: none;
+  transition: opacity 0.35s cubic-bezier(.4,0,.2,1), transform 0.35s cubic-bezier(.4,0,.2,1);
+}
+
+.speaker-icon.speaker-visible {
+  opacity: 1;
+  transform: scale(1);
+  pointer-events: auto;
+}
+
+.equalizer-icon.equalizer-visible {
+  opacity: 1;
+  transform: scale(1);
+  pointer-events: auto;
+}
+
+.read-aloud-icon .soundwave {
+  opacity: 0.5;
+  stroke-dasharray: 16;
+  stroke-dashoffset: 0;
+  transition: opacity 0.2s;
+}
+
+.read-aloud-icon.animating .soundwave {
+  opacity: 1;
+  animation: soundwave-pulse 0.7s infinite alternate;
+}
+
+.eq-bar {
+  opacity: 0.7;
+  transition: height 0.2s, opacity 0.2s;
+}
+
+.read-aloud-icon.animating .eq-bar-1 {
+  animation: eq-bar-bounce-1 0.7s infinite;
+}
+.read-aloud-icon.animating .eq-bar-2 {
+  animation: eq-bar-bounce-2 0.7s infinite;
+}
+.read-aloud-icon.animating .eq-bar-3 {
+  animation: eq-bar-bounce-3 0.7s infinite;
+}
+
+@keyframes soundwave-pulse {
+  0% {
+    stroke-dashoffset: 16;
+    opacity: 0.5;
+  }
+  60% {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+  100% {
+    stroke-dashoffset: 8;
+    opacity: 0.7;
+  }
+}
+@keyframes eq-bar-bounce-1 {
+  0%, 100% { height: 8px; y: 12px; opacity: 0.7; }
+  20% { height: 16px; y: 8px; opacity: 1; }
+  40% { height: 10px; y: 11px; opacity: 0.8; }
+  60% { height: 14px; y: 9px; opacity: 1; }
+  80% { height: 8px; y: 12px; opacity: 0.7; }
+}
+@keyframes eq-bar-bounce-2 {
+  0%, 100% { height: 14px; y: 9px; opacity: 1; }
+  20% { height: 8px; y: 12px; opacity: 0.7; }
+  40% { height: 16px; y: 8px; opacity: 1; }
+  60% { height: 10px; y: 11px; opacity: 0.8; }
+  80% { height: 14px; y: 9px; opacity: 1; }
+}
+@keyframes eq-bar-bounce-3 {
+  0%, 100% { height: 6px; y: 14px; opacity: 0.7; }
+  20% { height: 10px; y: 11px; opacity: 0.8; }
+  40% { height: 8px; y: 12px; opacity: 0.7; }
+  60% { height: 16px; y: 8px; opacity: 1; }
+  80% { height: 6px; y: 14px; opacity: 0.7; }
+}
+
+.speaker-icon .soundwave {
+  opacity: 0.5;
+  stroke-dasharray: 16;
+  stroke-dashoffset: 0;
+  transition: opacity 0.2s;
+}
+
+/* Speaker soundwave animation on hover/focus */
+.read-aloud-button:not(.reading):hover .speaker-icon .soundwave,
+.read-aloud-button:not(.reading):focus .speaker-icon .soundwave {
+  opacity: 1;
+  animation: soundwave-pulse 0.7s infinite alternate;
+}
+
+.read-aloud-button:not(.reading) .speaker-icon .soundwave {
+  animation: none;
+}
+
+/* Equalizer bars animate when reading */
+.equalizer-icon.equalizer-visible .eq-bar-1 {
+  animation: eq-bar-bounce-1 0.7s infinite;
+}
+.equalizer-icon.equalizer-visible .eq-bar-2 {
+  animation: eq-bar-bounce-2 0.7s infinite;
+}
+.equalizer-icon.equalizer-visible .eq-bar-3 {
+  animation: eq-bar-bounce-3 0.7s infinite;
 }
