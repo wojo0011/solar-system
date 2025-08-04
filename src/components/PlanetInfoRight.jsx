@@ -11,7 +11,7 @@ export default function PlanetInfoRight({
     <>
       <p style={{ color: '#ffe680', fontSize: '1.1rem', marginBottom: 0, textAlign: 'center' }}>
         {planet.name !== "Sun"
-          ? `Distance from Sun: ${planet.distanceFromSun.toLocaleString()} million km`
+          ? `Distance from Sun: ${planet.distanceFromSun !== undefined ? planet.distanceFromSun.toLocaleString() : "N/A"} million km`
           : planet.size
             ? `Size: ${planet.size}`
             : ''}

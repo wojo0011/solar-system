@@ -1,0 +1,119 @@
+{
+  "title": "Sun",
+  "typeLabel": "Type:",
+  "diameterLabel": "Diameter:",
+  "massLabel": "Mass:",
+  "temperatureLabel": "Temperature:",
+  "coreLabel": "Core:",
+  "coreComparison": "The Sun's core is extremely hot, reaching about 15 million °C!",
+  "surfaceLabel": "Surface:",
+  "ageLabel": "Age:",
+  "lifetimeLabel": "Expected Lifetime:",
+  "name": "Sun",
+  "age": "4.6 billion years",
+  "type": "G-type main-sequence Star",
+  "lifetime": "10 billion years",
+  "description": "The Sun is a big ball of fire. It's very, very hot! It gives us light and keeps us warm. Without the Sun, we wouldn't be able to live!",
+  "img": "images/sun.png",
+  "scale": 400,
+  "speed": 0,
+  "color": "#ffe680",
+  "labelRotation": 88,
+  "distanceFromSun": 0,
+  "size": "1,391,000 km",
+  "technicalSize": 1391000,
+  "technicalSizeUnit": "km",
+  "technicalSizeDescription": "Diameter in kilometers",
+  "sizeComparison": "The Sun is about 109 times wider than the Earth!",
+  "mass": "1.989 × 10³⁰ kg",
+  "technicalMass": 1.989e30,
+  "technicalMassUnit": "kg",
+  "technicalMassDescription": "Mass in kilograms",
+  "tempSurface": "5,500°C",
+  "tempCore": "15 million °C",
+  "tempCorona": "2 million °C",
+  "technicalTempSurface": 5500,
+  "technicalTempCore": 15000000,
+  "technicalTempCorona": 2000000,
+  "technicalTempUnit": "°C",
+  "technicalTempDescription": "Temperature in degrees Celsius",
+  "tempComparison": "The Sun's surface is about 20 times hotter than the hottest place on Earth!",
+  "yearLength": "-",
+  "dayLength": "25 days (equator)",
+  "surfaceImg": "images/sun_surface.png",
+  "surfaceScale": 1,
+  "surfaceTitle": "Sun Surface",
+  "surfaceDetails": "The Sun's surface is a sea of super-hot, glowing gas called plasma. It's always bubbling and bursting with energy! Don't get too close—it's way too hot!",
+  "goToPluto": "Go to Pluto",
+  "goToMercury": "Go to Mercury",
+  "showLargeView": "Show large view of",
+  "stopReading": "⏹️ Stop Reading",
+  "readAloud": "🔊 Read Aloud",
+  "closeLargeSurfaceView": "Close large surface view",
+  "lightboxAriaLabel": "Large view of the Sun, close with Escape or the close button.",
+  "imgAria": "Large detailed image of the Sun's surface.",
+  "surfaceAria": "Large view of the Sun's surface, close with Escape or the close button.",
+  "coronaLabel": "Corona:",
+  "coronaComparison": "The Sun's corona is even hotter than its surface—about 2 million °C!",
+  "massComparison": "The Sun is so heavy, it would take about 333,000 Earths to balance it on a giant scale!",
+  "readAloudTexts": [
+    {
+      "key": "description",
+      "text": "The Sun is a big ball of fire. It's very, very hot! It gives us light and keeps us warm. Without the Sun, we wouldn't be able to live!"
+    },
+    {
+      "key": "sizeComparison",
+      "text": "The Sun is about 109 times wider than the Earth!"
+    },
+    {
+      "key": "massComparison",
+      "text": "The Sun is so heavy, it would take about 333,000 Earths to balance it on a giant scale!"
+    },
+    {
+      "key": "coronaComparison",
+      "text": "The Sun's corona is even hotter than its surface—about 2 million °C!"
+    }
+  ],
+  "facts": [
+    {
+      "label": "Diameter:",
+      "text": "1,391,000 km",
+      "readable": "The Sun is about 109 times wider than the Earth!",
+      "img": "images/diameter_icon.png",
+      "alt": "The Sun compared to Earth",
+      "color": "#4ade80"
+    },
+    {
+      "label": "Mass:",
+      "text": "1.989 × 10³⁰ kg",
+      "readable": "The Sun is so heavy, it would take about 333,000 Earths to balance it on a giant scale!",
+      "img": "images/mass_icon.png",
+      "alt": "Sun mass compared to Earth",
+      "color": "#4ade80"
+    },
+    {
+      "label": "Core:",
+      "text": "15 million °C",
+      "readable": "The Sun's core is extremely hot, reaching about 15 million °C!",
+      "img": "images/core_icon.png",
+      "alt": "Sun core illustration",
+      "color": "#f87171"
+    },
+    {
+      "label": "Surface:",
+      "text": "5,500°C",
+      "readable": "The Sun's surface is about 20 times hotter than the hottest place on Earth!",
+      "img": "images/surface_icon.png",
+      "alt": "Sun surface illustration",
+      "color": "#60a5fa"
+    },
+    {
+      "label": "Corona:",
+      "text": "2 million °C",
+      "readable": "The Sun's corona is even hotter than its surface—about 2 million °C!",
+      "img": "images/corona_icon.png",
+      "alt": "Sun corona illustration",
+      "color": "#ffe066"
+    }
+  ]
+}

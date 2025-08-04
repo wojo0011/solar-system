@@ -1,0 +1,601 @@
+.sun-modal-dialog {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.7);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sun-modal-content {
+  background: #18181b;
+  border-radius: 1.5rem;
+  padding: 2.5rem 2.5rem;
+  box-shadow: 0 8px 32px #000a;
+  max-width: 900px;
+  text-align: left;
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 2.5rem;
+}
+
+.sun-modal-left {
+  flex: 0 0 220px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.sun-modal-title {
+  color: #ffe680;
+  font-weight: 700;
+  margin-bottom: 0.8rem;
+  text-align: center;
+}
+
+.sun-modal-image {
+  width: 340px;
+  height: 340px;
+  object-fit: contain;
+  display: block;
+  cursor: zoom-in;
+  border-radius: 1rem;
+  background: transparent;
+  border: 0.15rem solid #000;
+  outline: 1px solid #ffe680;
+  box-shadow: 0 0 16px 4px #ffe68055;
+  padding: 2rem;
+  transition: width 0.4s cubic-bezier(0.4,0,0.2,1), height 0.4s cubic-bezier(0.4,0,0.2,1), padding 0.4s cubic-bezier(0.4,0,0.2,1);
+}
+
+.sun-modal-image:hover {
+  border: 0.16rem solid #ffe680;
+  outline: 1.5px solid #fffbe0;
+  box-shadow: 0 0 20px 6px #ffe68099, 0 0 4px 1px #fffbe088;
+  transition: border 0.18s, outline 0.18s, box-shadow 0.18s;
+}
+
+.sun-modal-desktop-image {
+  display: block;
+}
+
+.sun-modal-mobile-image {
+  display: none;
+}
+
+@media (max-width: 900px) {
+  .sun-modal-dialog,
+  .sun-modal-content {
+    width: 100vw !important;
+    max-width: 100vw !important;
+    height: 100vh !important;
+    max-height: 100vh !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  .sun-modal-content {
+    flex-direction: column;
+    text-align: left;
+    gap: 1.5rem;
+    background: #18181b;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-bottom: 2.5rem !important;
+  }
+  .sun-modal-content::-webkit-scrollbar {
+    display: none;
+  }
+  .sun-modal-image {
+    width: 320px;
+    height: 320px;
+    padding: 1rem;
+    margin: 0;
+    transition: width 0.4s cubic-bezier(0.4,0,0.2,1), height 0.4s cubic-bezier(0.4,0,0.2,1), padding 0.4s cubic-bezier(0.4,0,0.2,1);
+  }
+  .sun-modal-desktop-image {
+    display: none !important;
+  }
+  .sun-modal-mobile-image {
+    display: block !important;
+  }
+  .sun-modal-description {
+    padding: 1.2rem 4.5rem 0 4.5rem;
+  }
+  .sun-modal-left {
+    margin-top: 4.5rem;
+  }
+  .close-btn {
+    margin-top: 1em;
+    margin-right: 0.5em;
+  }
+}
+
+@media (max-width: 600px) {
+  .sun-modal-dialog,
+  .sun-modal-content {
+    width: 100vw !important;
+    max-width: 100vw !important;
+    height: 100vh !important;
+    max-height: 100vh !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  .sun-modal-content {
+    gap: 0.5rem;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-bottom: 1.2rem !important;
+  }
+  .sun-modal-content::-webkit-scrollbar {
+    display: none;
+  }
+  .sun-modal-image {
+    width: 240px;
+    height: 240px;
+    padding: 0.5rem;
+    transition: width 0.4s cubic-bezier(0.4,0,0.2,1), height 0.4s cubic-bezier(0.4,0,0.2,1), padding 0.4s cubic-bezier(0.4,0,0.2,1);
+  }
+  .sun-modal-description {
+    padding: 0 1.5em;
+  }
+}
+
+.sun-modal-description {
+  color: #fff;
+  margin-bottom: 1.5rem;
+  text-align: left;
+  
+}
+
+.sun-modal-right {
+  flex: 1 1 0;
+  min-width: 0;
+  position: relative;
+}
+
+.sun-modal-info-type {
+  color: #ffe680;
+  margin-bottom: 0;
+}
+
+.sun-modal-info-age,
+.sun-modal-info-lifetime {
+  color: #60a5fa;
+  margin-bottom: 0.75rem;
+}
+
+.sun-modal-info-diameter,
+.sun-modal-info-mass {
+  color: #4ade80;
+  margin-bottom: 0.75rem;
+}
+
+.sun-modal-info-temp {
+  color: #fff;
+  margin-bottom: 1.5rem;
+}
+
+.sun-modal-info-temp-core {
+  color: #f87171;
+  margin-bottom: 0.75rem;
+}
+
+.sun-modal-info-temp-surface {
+  color: #60a5fa;
+  margin-bottom: 0.75rem;
+}
+
+.sun-modal-info-comparison {
+  display: block;
+  margin: 0.7em 0 1.2em 0;
+  color: #fbbf24;
+  line-height: 1.5;
+}
+
+.sun-modal-info-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-start;
+}
+
+.sun-modal-info-actions-mobile {
+  display: none;
+}
+.sun-modal-info-actions-desktop {
+  display: flex;
+}
+@media (max-width: 900px) {
+  .sun-modal-info-actions-mobile {
+    display: flex;
+    justify-content: center;
+    margin-top: 0.7rem;
+    margin-bottom: 0.7rem;
+    width: 100%;
+    gap: 0;
+  }
+  .sun-modal-info-actions-desktop {
+    display: none;
+  }
+}
+
+.sun-modal-mercury-btn {
+  position: absolute;
+  top: 50%;
+  right: -5.5rem;
+  transform: translateY(-50%);
+  z-index: 10003;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  pointer-events: auto;
+}
+
+.sun-modal-pluto-btn {
+  position: absolute;
+  top: 50%;
+  left: -5.5rem;
+  transform: translateY(-50%);
+  z-index: 10003;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  pointer-events: auto;
+}
+
+.sun-modal-planet-btn {
+  background: transparent;
+  width: 3.2rem;
+  height: 3.2rem;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+  overflow: visible;
+  transition: box-shadow 0.2s, border-color 0.2s;
+}
+
+.sun-modal-planet-img {
+  width: 3.75rem;
+  height: 3.75rem;
+  min-width: 3.75rem;
+  min-height: 3.75rem;
+  display: block;
+  object-fit: cover;
+  pointer-events: none;
+  transition: border-color 0.2s;
+}
+
+.zoom-ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 3.75rem !important;
+  height: 3.75rem !important;
+  min-width: 3.75rem !important;
+  min-height: 3.75rem !important;
+  max-width: 3.75rem !important;
+  max-height: 3.75rem !important;
+  border-radius: 50%;
+  border: 3px solid #ffe680;
+  opacity: 0;
+  transition: opacity 0.2s;
+  pointer-events: none;
+}
+
+.group:hover .zoom-ring {
+  opacity: 1 !important;
+}
+
+.sun-modal-image-nav-row {
+  display: none;
+}
+
+@media (min-width: 901px) {
+  .sun-modal-image-nav-row {
+    display: none !important;
+  }
+  .sun-modal-image {
+    display: block !important;
+  }
+}
+
+@media (max-width: 900px) {
+  .sun-modal-content {
+    flex-direction: column;
+    max-width: 98vw;
+    padding: 1.5rem 0.5rem;
+    gap: 0;
+  }
+  .sun-modal-left {
+    flex: none;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+  }
+  .sun-modal-image {
+    width: 320px;
+    height: 320px;
+    padding: 1rem;
+    margin: 0;
+  }
+  .sun-modal-title {
+    font-size: 1.5rem;
+  }
+  .sun-modal-right {
+    min-width: 0;
+    margin-top: 0.5rem;
+    padding: 0 2em;
+  }
+  .sun-modal-image-nav-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 1.7rem;
+    width: 100%;
+    margin-bottom: 0.8rem;
+  }
+  .sun-modal-inline-planet-btn {
+    position: static;
+    transform: none;
+    margin: 0;
+    flex-shrink: 0;
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+  /* Hide side and bottom navs on mobile, only show inline */
+  .sun-modal-mercury-btn,
+  .sun-modal-pluto-btn,
+  .sun-modal-bottom-planet-nav {
+    display: none !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .sun-modal-content {
+    max-width: 100vw;
+    padding: 0.5rem 0.1rem;
+    gap: 0.5rem;
+    padding-bottom: 1.2rem !important;
+  }
+  .sun-modal-image {
+    width: 240px;
+    height: 240px;
+    padding: 0.5rem;
+    transition: width 0.4s cubic-bezier(0.4,0,0.2,1), height 0.4s cubic-bezier(0.4,0,0.2,1), padding 0.4s cubic-bezier(0.4,0,0.2,1);
+  }
+  .sun-modal-title {
+    font-size: 1.1rem;
+  }
+  .sun-modal-lightbox-img {
+    max-width: 98vw;
+    max-height: 60vh;
+    border-radius: 1rem;
+  }
+  .sun-modal-lightbox-title {
+    font-size: 1.1rem;
+    margin-top: 0.5rem;
+  }
+  .sun-modal-bottom-planet-nav {
+    padding: 0.4rem 0.3rem 0.4rem 0.3rem;
+  }
+  .sun-modal-image-nav-row {
+    gap: 1.3rem;
+  }
+  .sun-modal-inline-planet-btn {
+    width: 1.7rem;
+    height: 1.7rem;
+    min-width: 1.7rem;
+    min-height: 1.7rem;
+  }
+}
+
+/* Default: hide bottom nav, show side buttons */
+.sun-modal-bottom-planet-nav {
+  display: none;
+}
+
+.sun-modal-inline-planet-btn {
+  width: 3.75rem;
+  height: 3.75rem;
+  min-width: 3.75rem;
+  min-height: 3.75rem;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  background: transparent;
+  border: none;
+}
+
+@media (max-width: 1200px) {
+    .sun-modal-content {
+        max-width: 800px;
+        transition: max-width 0.4s cubic-bezier(0.4,0,0.2,1);
+    }
+}
+
+@media (max-width: 1100px) {
+  .sun-modal-pluto-btn {
+    left: -4.3rem;
+    transition: left 0.4s cubic-bezier(0.4,0,0.2,1);
+  }
+  .sun-modal-mercury-btn {
+    right: -4.3rem;
+    transition: right 0.4s cubic-bezier(0.4,0,0.2,1);
+  }
+}
+
+@media (max-width: 1050px) {
+    .sun-modal-content {
+        max-width: 700px;
+        transition: max-width 0.4s cubic-bezier(0.4,0,0.2,1);
+    }
+}
+
+@media (max-width: 1000px) {
+  .sun-modal-pluto-btn {
+    left: -4.5rem;
+    transition: left 0.4s cubic-bezier(0.4,0,0.2,1);
+  }
+  .sun-modal-mercury-btn {
+    right: -4.5rem;
+    transition: right 0.4s cubic-bezier(0.4,0,0.2,1);
+  }
+}
+
+@media (max-width: 950px) {
+  .sun-modal-pluto-btn {
+    left: -4.2rem;
+    transition: left 0.4s cubic-bezier(0.4,0,0.2,1);
+  }
+  .sun-modal-mercury-btn {
+    right: -4.2rem;
+    transition: right 0.4s cubic-bezier(0.4,0,0.2,1);
+  }
+}
+
+@media (max-width: 930px) {
+  .sun-modal-pluto-btn {
+    left: -3.4rem;
+    transition: left 0.4s cubic-bezier(0.4,0,0.2,1);
+  }
+  .sun-modal-mercury-btn {
+    right: -3.4rem;
+    transition: right 0.4s cubic-bezier(0.4,0,0.2,1);
+  }
+}
+
+
+
+@media (max-width: 900px) {
+  .sun-modal-inline-planet-btn {
+    width: 3.75rem;
+    height: 3.75rem;
+    min-width: 3.75rem;
+    min-height: 3.75rem;
+  }
+  .sun-modal-planet-img {
+    width: 3.75rem;
+    height: 3.75rem;
+    min-width: 3.75rem;
+    min-height: 3.75rem;
+  }
+  .zoom-ring {
+    width: 3.75rem !important;
+    height: 3.75rem !important;
+    min-width: 3.75rem !important;
+    min-height: 3.75rem !important;
+    max-width: 3.75rem !important;
+    max-height: 3.75rem !important;
+  }
+}
+@media (max-width: 600px) {
+  .sun-modal-inline-planet-btn {
+    width: 2.95rem;
+    height: 2.95rem;
+    min-width: 2.95rem;
+    min-height: 2.95rem;
+  }
+  .sun-modal-planet-img {
+    width: 2.95rem;
+    height: 2.95rem;
+    min-width: 2.95rem;
+    min-height: 2.95rem;
+  }
+  .zoom-ring {
+    width: 2.95rem !important;
+    height: 2.95rem !important;
+    min-width: 2.95rem !important;
+    min-height: 2.95rem !important;
+    max-width: 2.95rem !important;
+    max-height: 2.95rem !important;
+  }
+}
+
+@media (max-width: 400px) {
+    .sun-modal-image-nav-row {
+        flex-direction: column;
+    }
+}
+
+.sun-modal-info-diameter,
+.sun-modal-info-mass,
+.sun-modal-info-temp-core,
+.sun-modal-info-temp-surface {
+  margin-bottom: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.sun-modal-label {
+  color: #fff;
+  font-weight: 600;
+  margin-right: 0.1em;
+}
+
+.sun-modal-sublabel {
+  color: #d1d5db;
+  font-weight: 500;
+}
+
+
+.sun-modal-image-btn.sun-modal-tab-outline:focus-visible {
+  outline: 3px solid #ffe680 !important;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px #ffe68055;
+  z-index: 2;
+  border-radius: 1em;
+}
+.sun-modal-tab-outline:focus-visible {
+  outline: 3px solid #ffe680 !important;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px #ffe68055;
+  z-index: 2;
+  border-radius: 5em;
+}
+.sun-modal-image-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  display: block;
+  cursor: pointer;
+}
+
+ 
+.sun-modal-fact-main {
+    display: flex;
+    flex-direction: row;
+    flex: 1;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+@media (max-width: 400px) {
+  .sun-modal-fact-main {
+    flex-direction: column !important;
+    align-items: center !important;
+    align-self: center !important;
+    gap: 1em !important;
+  }
+}

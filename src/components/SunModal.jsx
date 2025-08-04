@@ -1,17 +1,19 @@
 import React, { useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { Button } from "./ui/button";
 import NarratorAstronaut from "./NarratorAstronaut";
+import "./SunModal.css";
+import sunModalText from "../data/sunModal.json";
+import SunInfoLightbox from "./SunInfoLightbox";
 
-export default function SunModal({ planets, speak, setSelectedPlanet, setSelectedPlanetIdx }) {
+export default function SunModal({ setSelectedPlanet, setSelectedPlanetIdx }) {
   const [isReading, setIsReading] = useState(false);
   const [voices, setVoices] = useState([]);
   const [showSunInfoLightbox, setShowSunInfoLightbox] = useState(false);
-  
-    // Find the Sun, Mercury, and Pluto objects from the planets array
-  const sun = planets.find(p => p.name === 'Sun');
-  const mercury = planets.find(p => p.name === 'Mercury');
-  const pluto = planets.find(p => p.name === 'Pluto');
+
+  // Mercury and Pluto for navigation
+  const mercury = { name: "Mercury", img: "images/mercury.png" };
+  const pluto = { name: "Pluto", img: "images/pluto.png" };
 
   // Load voices on mount and when voiceschanged fires
   useEffect(() => {
@@ -80,25 +82,45 @@ export default function SunModal({ planets, speak, setSelectedPlanet, setSelecte
     }, 750);
   };
 
+  // Trap focus within modal when open
+  useEffect(() => {
+    const modal = document.querySelector('.sun-modal-dialog');
+    if (!modal) return;
+    const focusableSelectors = [
+      'button', '[href]', 'input', 'select', 'textarea', '[tabindex]:not([tabindex="-1"])'
+    ];
+    const getFocusable = () => Array.from(modal.querySelectorAll(focusableSelectors.join(',')))
+      .filter(el => !el.disabled && el.offsetParent !== null);
+    const handleKeyDown = (e) => {
+      if (e.key !== 'Tab') return;
+      const focusableEls = getFocusable();
+      if (!focusableEls.length) return;
+      const first = focusableEls[0];
+      const last = focusableEls[focusableEls.length - 1];
+      if (e.shiftKey) {
+        if (document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        }
+      } else {
+        if (document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+    };
+    modal.addEventListener('keydown', handleKeyDown);
+    return () => {
+      modal.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
+
   return (
-      <dialog
-        open
+      <div
+        role="dialog"
+        aria-modal="true"
         tabIndex={-1}
-        style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          width: '100vw',
-          height: '100vh',
-          background: 'rgba(0,0,0,0.7)',
-          zIndex: 9999,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          border: 'none',
-          padding: 0,
-          margin: 0,
-        }}
+        className="sun-modal-dialog"
         onClick={e => {
           // If reading, stop reading but do not close modal
           if (isReading) {
@@ -113,7 +135,11 @@ export default function SunModal({ planets, speak, setSelectedPlanet, setSelecte
         }}
         onKeyDown={e => {
           if (e.key === 'Escape') {
-            setSelectedPlanet(null);
+            e.stopPropagation();
+            if (!isReading && showSunInfoLightbox) {
+              setShowSunInfoLightbox(false);
+            }
+            return;
           }
         }}
       >
@@ -122,262 +148,232 @@ export default function SunModal({ planets, speak, setSelectedPlanet, setSelecte
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.8, opacity: 0 }}
-          style={{
-            background: '#18181b',
-            borderRadius: '1.5rem',
-            padding: '2.5rem 2.5rem',
-            boxShadow: '0 8px 32px #000a',
-            maxWidth: 700,
-            textAlign: 'left',
-            position: 'relative',
-            display: 'flex',
-            flexDirection: 'row',
-            alignItems: 'center',
-            gap: '2.5rem',
-          }}
+          className="sun-modal-content"
           onClick={e => e.stopPropagation()}
         >
           <Button
             onClick={() => {setSelectedPlanet(null) }}
-            className="close-btn"
+            className="close-btn sun-modal-tab-outline  "
             aria-label="Close"
-          >
+            tabIndex={0}
+            autoFocus
+          > 
             <span className="close-x">×</span>
           </Button>
           {/* Left: Name, Sun image, Description */}
-          <div style={{ flex: '0 0 220px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-            <h2 style={{ color: '#ffe680', fontSize: '2.1rem', fontWeight: 700, marginBottom: '0.8rem', textAlign: 'center' }}>
-              {sun.name}
+          <div className="sun-modal-left">
+            <h2 className="sun-modal-title">
+              {sunModalText.title}
             </h2>
-            <img
-                src={sun.img}
-                alt={sun.name}
-                style={{
-                    width: '340px',
-                    height: '340px',
-                    objectFit: 'contain',
-                    display: 'block',
-                    marginBottom: '0.8rem',
-                    cursor: 'zoom-in',
-                    borderRadius: '1rem',
-                    background: 'transparent',
-                    border: '0.15rem solid #000',
-                    outline: '1px solid #ffe680',
-                    boxShadow: '0 0 16px 4px #ffe68055',
-                    padding: '2rem',
+            {/* Show sun image directly on large screens, and nav row only on mobile */}
+            <button
+              type="button"
+              className="sun-modal-image-btn sun-modal-desktop-image sun-modal-tab-outline"
+              onClick={() => setShowSunInfoLightbox(true)}
+              onKeyDown={e => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  setShowSunInfoLightbox(true);
+                }
+              }}
+              aria-label={`${sunModalText.showLargeView} ${sunModalText.name}`}
+              style={{ background: "none", border: "none", padding: 0, margin: 0, display: "block" }}
+            >
+              <img
+                src={sunModalText.img}
+                alt={sunModalText.name}
+                className="sun-modal-image"
+                draggable={false}
+              />
+            </button>
+            <div className="sun-modal-image-nav-row">
+              <Button
+                className="font-bold rounded-full shadow-lg flex items-center justify-center group sun-modal-planet-btn sun-modal-inline-planet-btn sun-modal-tab-outline"
+                aria-label={sunModalText.goToPluto}
+                onClick={e => {
+                  e.stopPropagation();
+                  setSelectedPlanet(pluto);
+                  setSelectedPlanetIdx(1); // Pluto is now static, index 1
                 }}
-                onClick={() => setShowSunInfoLightbox(true)}
                 tabIndex={0}
-                aria-label={`Show large view of ${sun.name}`}
-            />
-            <p style={{ color: '#fff', fontSize: '1.1rem', marginBottom: '1.5rem', textAlign: 'center' }}>
-              {sun.description}
+              >
+                <img
+                  src="images/pluto.png"
+                  alt={sunModalText.goToPluto}
+                  className="sun-modal-planet-img"
+                />
+                <span className="zoom-ring" />
+              </Button>
+              <button
+                type="button"
+                className="sun-modal-image-btn sun-modal-mobile-image sun-modal-tab-outline"
+                onClick={() => setShowSunInfoLightbox(true)}
+                onKeyDown={e => { 
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    setShowSunInfoLightbox(true);
+                  }
+                }}
+                aria-label={`${sunModalText.showLargeView} ${sunModalText.name}`}
+                style={{ background: "none", border: "none", padding: 0, margin: 0, display: "block" }}
+              >
+                <img
+                  src={sunModalText.img}
+                  alt={sunModalText.name}
+                  className="sun-modal-image sun-modal-mobile-image"
+                  draggable={false}
+                />
+              </button>
+              <Button
+                className="font-bold rounded-full shadow-lg flex items-center justify-center group sun-modal-planet-btn sun-modal-inline-planet-btn sun-modal-tab-outline"
+                aria-label={sunModalText.goToMercury}
+                onClick={e => {
+                  e.stopPropagation();
+                  setSelectedPlanet(mercury);
+                  setSelectedPlanetIdx(0); // Mercury is now static, index 0
+                }}
+                tabIndex={0}
+              >
+                <img
+                  src="images/mercury.png"
+                  alt={sunModalText.goToMercury}
+                  className="sun-modal-planet-img"
+                />
+                <span className="zoom-ring" />
+              </Button>
+            </div>
+            
+            <div className="sun-modal-info-actions sun-modal-info-actions-mobile sun-modal-tab-outline">
+              <Button
+                className={'read-aloud-button' + (isReading ? ' reading' : '') + ' sun-modal-tab-outline'}
+                onClick={() => handleSpeak(sunModalText.readAloudTexts.map(item => item.text).join(' '))}
+              >
+                {isReading ? sunModalText.stopReading : sunModalText.readAloud}
+              </Button>
+            </div>
+            <p className="sun-modal-description">
+              {sunModalText.description}
             </p>
           </div>
           {/* Right: Info */}
-          <div style={{ flex: '1 1 0', minWidth: 0, position: 'relative' }}>
-            <p style={{ color: '#ffe680', fontSize: '1.1rem', marginBottom: 0 }}>
-              Type: {sun.type}
-            </p>
-            <p style={{ color: '#60a5fa', fontSize: '1.1rem', marginBottom: '0.75rem' }}>
-              Age: {sun.age}
-            </p>
-            <p style={{ color: '#60a5fa', fontSize: '1.1rem', marginBottom: '0.75rem' }}>
-              Expected Lifetime: {sun.lifetime}
-            </p>
-            <p style={{ color: '#4ade80', fontSize: '1.1rem', marginBottom: '0.75rem' }}>
-              Diameter: {sun.size}
-            </p>
-            <p style={{ color: '#4ade80', fontSize: '1.1rem', marginBottom: '0.75rem' }}>
-              Mass: {sun.mass}
-            </p>
-            <p style={{ color: '#fff', fontSize: '1.1rem', marginBottom: '1.5rem' }}>
-              Temperature: 
-              <p style={{ color: '#f87171', fontSize: '1.1rem', marginBottom: '0.75rem' }}>
-                Core: {sun.tempHot}
-              </p>
-              <p style={{ color: '#60a5fa', fontSize: '1.1rem', marginBottom: '0.75rem' }}>
-                Surface: {sun.tempCool}
-              </p>
-            </p>
-            <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-start' }}>
+          <div className="sun-modal-right">
+            {sunModalText.facts?.map((fact) => (
+              <div className="sun-modal-fact" key={fact.label || fact.text} style={{marginBottom: '1.5rem', display: 'flex', flexDirection: 'column', alignItems: 'flex-start'}}>
+                <div className="sun-modal-fact-main">
+                {fact.img && (
+                  <img src={fact.img} alt={fact.alt || ''} className="sun-modal-fact-img" style={{display:'block',marginTop:'0.5em',maxWidth:'35px'}} />
+                )}
+                <label className="sun-modal-label">{fact.label}</label> <span style={{color: fact.color}}>{fact.text}</span>
+                </div>
+                <span className="sun-modal-info-comparison">{fact.readable}</span>
+              </div>
+            ))}
+            
+            <div className="sun-modal-info-actions sun-modal-info-actions-desktop sun-modal-tab-outline">
               <Button
-                className={'read-aloud-button' + (isReading ? ' reading' : '')}
-                onClick={() => handleSpeak(sun.description)}
+                className={'read-aloud-button' + (isReading ? ' reading' : '') + ' sun-modal-tab-outline'}
+                onClick={() => handleSpeak(sunModalText.readAloudTexts.map(item => item.text).join(' '))}
               >
-                {isReading ? '⏹️ Stop Reading' : '🔊 Read Aloud'}
+                {isReading ? sunModalText.stopReading : sunModalText.readAloud}
               </Button>
             </div>
           </div>
           {/* Planet button on the right: open Mercury modal */}
-          <div style={{
-            position: 'absolute',
-            top: '50%',
-            right: '-3.7rem',
-            transform: 'translateY(-50%)',
-            zIndex: 10003,
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '1.5rem',
-            pointerEvents: 'auto',
-          }}>
+          <div className="sun-modal-mercury-btn">
             <Button
-              className="font-bold rounded-full shadow-lg flex items-center justify-center group"
-              style={{
-                background: 'transparent',
-                width: '3.2rem',
-                height: 'rem',
-                padding: 0,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                cursor: 'pointer',
-                position: 'relative',
-                overflow: 'visible',
-                transition: 'box-shadow 0.2s, border-color 0.2s',
-              }}
-              aria-label="Go to Mercury"
+              className="font-bold rounded-full shadow-lg flex items-center justify-center group sun-modal-planet-btn sun-modal-tab-outline"
+              aria-label={sunModalText.goToMercury}
               onClick={e => {
                 e.stopPropagation();
                 setSelectedPlanet(mercury);
-                setSelectedPlanetIdx(planets.findIndex(p => p.name === 'Mercury'));
+                setSelectedPlanetIdx(0); // Mercury is now static, index 0
               }}
+              tabIndex={0}
             >
               <img
                 src="images/mercury.png"
-                alt="Go to Mercury"
-                style={{
-                  width: '3.2rem',
-                  height: '3.2rem',
-                  display: 'block',
-                  objectFit: 'cover',
-                  pointerEvents: 'none',
-                  transition: 'border-color 0.2s',
-                }}
+                alt={sunModalText.goToMercury}
+                className="sun-modal-planet-img"
               />
               <span
                 className="zoom-ring"
-                style={{
-                  position: 'absolute',
-                  top: '50%',
-                  left: '50%',
-                  transform: 'translate(-50%, -50%)',
-                  width: '100%',
-                  height: '100%',
-                  borderRadius: '50%',
-                  border: '3px solid #ffe680',
-                  opacity: 0,
-                  transition: 'opacity 0.2s',
-                  pointerEvents: 'none',
-                }}
               />
-              <style>{`.group:hover .zoom-ring { opacity: 1 !important; }`}</style>
             </Button>
           </div>
           {/* Previous button on the left: open Pluto modal */}
-          <div style={{
-            position: 'absolute',
-            top: '50%',
-            left: '-3.7rem',
-            transform: 'translateY(-50%)',
-            zIndex: 10003,
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '1.5rem',
-            pointerEvents: 'auto',
-          }}>
+          <div className="sun-modal-pluto-btn">
             <Button
-              className="font-bold rounded-full shadow-lg flex items-center justify-center group"
-              style={{
-                background: 'transparent',
-                width: '3.2rem',
-                height: '3.2rem',
-                padding: 0,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                cursor: 'pointer',
-                position: 'relative',
-                overflow: 'visible',
-                transition: 'box-shadow 0.2s, border-color 0.2s',
-              }}
-              aria-label="Go to Pluto"
+              className="font-bold rounded-full shadow-lg flex items-center justify-center group sun-modal-planet-btn sun-modal-tab-outline"
+              aria-label={sunModalText.goToPluto}
               onClick={e => {
                 e.stopPropagation();
                 setSelectedPlanet(pluto);
-                setSelectedPlanetIdx(planets.findIndex(p => p.name === 'Pluto'));
+                setSelectedPlanetIdx(1); // Pluto is now static, index 1
               }}
+              tabIndex={0}
             >
               <img
                 src="images/pluto.png"
-                alt="Go to Pluto"
-                style={{
-                  width: '3.2rem',
-                  height: '3.2rem',
-                  display: 'block',
-                  objectFit: 'cover',
-                  pointerEvents: 'none',
-                  transition: 'border-color 0.2s',
-                }}
+                alt={sunModalText.goToPluto}
+                className="sun-modal-planet-img"
               />
               <span
                 className="zoom-ring"
-                style={{
-                  position: 'absolute',
-                  top: '50%',
-                  left: '50%',
-                  transform: 'translate(-50%, -50%)',
-                  width: '100%',
-                  height: '100%',
-                  borderRadius: '50%',
-                  border: '3px solid #ffe680',
-                  opacity: 0,
-                  transition: 'opacity 0.2s',
-                  pointerEvents: 'none',
-                }}
               />
-              <style>{`.group:hover .zoom-ring { opacity: 1 !important; }`}</style>
             </Button>
           </div>
 
-            {showSunInfoLightbox && (
-                <div
-                    role="dialog"
-                    aria-modal="true"
-                    onClick={e => { if (e.target === e.currentTarget) setShowSunInfoLightbox(false); }}
-                    style={{
-                        position: 'fixed',
-                        top: 0,
-                        left: 0,
-                        width: '100vw',
-                        height: '100vh',
-                        background: 'rgba(0,0,0,0.92)',
-                        zIndex: 20000,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        cursor: 'zoom-out',
-                    }}
-                >
-                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                        <img
-                            src={sun.img}
-                            alt={sun.name + ' surface large'}
-                            style={{
-                                maxWidth: '90vw',
-                                maxHeight: '90vh',
-                                borderRadius: '2rem',
-                            }}
-                            aria-label="Close large surface view"
-                            onClick={e => { e.stopPropagation(); setShowSunInfoLightbox(false); }}
-                        />
-                        <span style={{ color: '#ffe680', fontWeight: 700, fontSize: '2rem', marginTop: '1.2rem', textAlign: 'center' }}>{sun.name}</span>
-                    </div>
-                </div>
-            )}
-
         </motion.div>
-      </dialog>
+        {/* Bottom nav for planet buttons on mobile (move outside modal-content for visibility) */}
+        <div className="sun-modal-bottom-planet-nav">
+          <Button
+            className="font-bold rounded-full shadow-lg flex items-center justify-center group sun-modal-planet-btn sun-modal-tab-outline"
+            aria-label={sunModalText.goToPluto}
+            onClick={e => {
+              e.stopPropagation();
+              setSelectedPlanet(pluto);
+              setSelectedPlanetIdx(1); // Pluto is now static, index 1
+            }}
+            tabIndex={0}
+          >
+            <img
+              src="images/pluto.png"
+              alt={sunModalText.goToPluto}
+              className="sun-modal-planet-img"
+            />
+            <span className="zoom-ring" />
+          </Button>
+          <div style={{ flex: 1 }} />
+          <Button
+            className="font-bold rounded-full shadow-lg flex items-center justify-center group sun-modal-planet-btn sun-modal-tab-outline"
+            aria-label={sunModalText.goToMercury}
+            onClick={e => {
+              e.stopPropagation();
+              setSelectedPlanet(mercury);
+              setSelectedPlanetIdx(0); // Mercury is now static, index 0
+            }}
+            tabIndex={0}
+          >
+            <img
+              src="images/mercury.png"
+              alt={sunModalText.goToMercury}
+              className="sun-modal-planet-img"
+            />
+            <span className="zoom-ring" />
+          </Button>
+        </div>
+
+        <AnimatePresence>
+          {showSunInfoLightbox && (
+            <SunInfoLightbox
+              open={showSunInfoLightbox}
+              sunModalText={sunModalText}
+              onClose={() => setShowSunInfoLightbox(false)}
+            />
+          )}
+        </AnimatePresence>
+
+        </div>
     
   );
 }

@@ -1,0 +1,49 @@
+.sun-modal-lightbox {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.92);
+  z-index: 20000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: zoom-out;
+}
+
+.sun-modal-lightbox-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.sun-modal-lightbox-img {
+  max-width: 80vw;
+  max-height: 80vh;
+  border-radius: 2rem;
+  cursor: zoom-out;
+}
+
+.sun-modal-lightbox-title {
+  color: #ffe680;
+  font-weight: 700;
+  margin-top: 1.2rem;
+  text-align: center;
+  display: block;
+}
+
+.sun-modal-lightbox-close-btn {
+  position: absolute;
+  top: 2.5rem;
+  right: 4.5rem;
+  z-index: 10;
+}
+
+.sun-modal-lightbox-img-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  display: block;
+}
